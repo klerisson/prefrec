@@ -10,8 +10,23 @@
   <dependencies>
   	<dependency>
   		<groupId>br.ufu.facom.lsi</groupId>
-  		<artifactId>prefrec-stratification</artifactId>
-  		 <version>0.0.1-SNAPSHOT</version>
+  		<artifactId>prefrec-pref-representation</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>br.ufu.facom.lsi</groupId>
+  		<artifactId>prefrec-pref-clusterer</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>br.ufu.facom.lsi</groupId>
+  		<artifactId>prefrec-agregation</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>br.ufu.facom.lsi</groupId>
+		<artifactId>prefrec-pref-mining</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>
   

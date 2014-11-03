@@ -1,13 +1,11 @@
 package br.ufu.facom.lsi.prefrec.clusterer;
 
 import gov.sandia.cognition.learning.algorithm.clustering.AffinityPropagation;
-import gov.sandia.cognition.learning.algorithm.clustering.divergence.ClusterCentroidDivergenceFunction;
 import gov.sandia.cognition.math.DivergenceFunction;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,8 +17,10 @@ import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.apache.commons.math3.ml.clustering.FuzzyKMeansClusterer;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 
+import br.ufu.facom.lsi.prefrec.clusterer.distance.CosineDistance;
 import br.ufu.facom.lsi.prefrec.clusterer.distance.SimilarityDivergence;
 import br.ufu.facom.lsi.prefrec.representation.controller.PrefMatrixScorer;
 
@@ -43,52 +43,81 @@ public class Main {
 			PrefMatrixScorer pms = new PrefMatrixScorer();
 			pms.deserialize();
 
-			// CosineDistance cd = new CosineDistance();
-//			EuclideanDistance ed = new EuclideanDistance();
-//			DBSCANClusterer<DoublePoint> dbscan = new DBSCANClusterer<DoublePoint>(
-//					20, 4, ed);
-//
-//			List<Cluster<DoublePoint>> clusters = dbscan
-//					.cluster(toDoublePointList(pms));
-//
-//			System.out.println(clusters.size());
+			// cluster
+			switch (args[0]) {
+			case "DBSCAN":
+				DistanceMeasure dm = null;
+				if (args[1].equals("euclidean")) {
+					dm = new EuclideanDistance();
+				} else {
+					dm = new CosineDistance();
+				}
+				DBSCANClusterer<DoublePoint> dbscan = new DBSCANClusterer<DoublePoint>(
+						Integer.parseInt(args[2]), Integer.parseInt(args[3]),
+						dm);
 
-//			for (Cluster<DoublePoint> c : clusters) {
-//				
-//				Iterator<DoublePoint> it = c.getPoints().iterator();
-//				while(it.hasNext()) {
-//					DoublePoint dp = (DoublePoint) it.next();
-//					for (Object o : c.getPoints()) {
-//
-//						DoublePoint dpTemp = (DoublePoint) o;
-//						System.out.println(ed.compute(dp.getPoint(),
-//								dpTemp.getPoint()));
-//					}
-//				}
-//
-//			}
-			
-			FuzzyKMeansClusterer<DoublePoint> fkmc = new FuzzyKMeansClusterer<DoublePoint>(3, 3);
-			List<CentroidCluster<DoublePoint>> clustersFuzzy = fkmc.cluster(toDoublePointList(pms));
-			System.out.println(clustersFuzzy.size());
-			
+				List<Cluster<DoublePoint>> clusters = dbscan
+						.cluster(toDoublePointList(pms));
+				serializeOutputs(clusterVectorToMatrix(clusters));
+				break;
 
-			//==========================
-//			AffinityPropagation<DoublePoint> ap = new AffinityPropagation<>();
-//			DivergenceFunction<DoublePoint, DoublePoint> df = new SimilarityDivergence();
-//			ap.setDivergence(df);
-//			ap.learn(toDoublePointList(pms));
-//			
-//			List<gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster<DoublePoint>> clustersAff = ap.getResult();
-//			System.out.println(clustersAff.size());
-//			
-			
-			// Create the output
-//			serializeOutputs(clusterVectorToMatrix(clusters));
+			case "FUZZY":
+				FuzzyKMeansClusterer<DoublePoint> fkmc = new FuzzyKMeansClusterer<DoublePoint>(
+						Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+
+				List<CentroidCluster<DoublePoint>> clustersFuzzy = fkmc
+						.cluster(toDoublePointList(pms));
+
+				serializeOutputs(clusterVectorToMatrix(clustersFuzzy));
+				break;
+
+			case "AFFINITY":
+				AffinityPropagation<DoublePoint> ap = new AffinityPropagation<>();
+				DivergenceFunction<DoublePoint, DoublePoint> df = new SimilarityDivergence();
+				ap.setDivergence(df);
+				ap.learn(toDoublePointList(pms));
+
+				List<gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster<DoublePoint>>
+				clustersAff = ap.getResult();
+				
+				serializeOutputs(clusterAffinityVectorToMatrix(clustersAff));
+				break;
+			}
+	
 			System.out.println("Fim: " + new Date());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Map<Long, List<Map<Long, Double[][]>>> clusterAffinityVectorToMatrix(
+			List<gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster<DoublePoint>> clusters) {
+		
+		Map<Long, List<Map<Long, Double[][]>>> matrix = new LinkedHashMap<>();
+
+		for (Long i = 0L; i < clusters.size(); i++) {
+			List<Map<Long, Double[][]>> clusterList = new ArrayList<>();
+
+			for (DoublePoint dp : clusters.get(i.intValue()).getMembers()) {
+
+				Map<Long, Double[][]> userMatrix = new LinkedHashMap<>();
+
+				Long id = userScoreDoublePoint.get(dp);
+				Double[][] matrixDouble = new Double[matrixLength][matrixLength];
+
+				int index = 0;
+				for (int j = 0; j < matrixLength; j++) {
+					for (int k = 0; k < matrixLength; k++) {
+						matrixDouble[j][k] = dp.getPoint()[index];
+						index++;
+					}
+				}
+				userMatrix.put(id, matrixDouble);
+				clusterList.add(userMatrix);
+			}
+			matrix.put(i, clusterList);
+		}
+		return matrix;
 	}
 
 	private static void serializeOutputs(
@@ -107,8 +136,8 @@ public class Main {
 		}
 	}
 
-	private static Map<Long, List<Map<Long, Double[][]>>> clusterVectorToMatrix(
-			List<Cluster<DoublePoint>> clusters) {
+	private static <T extends Cluster<DoublePoint>> Map<Long, List<Map<Long, Double[][]>>> clusterVectorToMatrix(
+			List<T> clusters) {
 
 		Map<Long, List<Map<Long, Double[][]>>> matrix = new LinkedHashMap<>();
 

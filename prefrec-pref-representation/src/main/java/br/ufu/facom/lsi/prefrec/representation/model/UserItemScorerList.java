@@ -80,7 +80,48 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+	
+	public void loadByUserFold(int fold) throws Exception{
+		
+		String selectSQL = "select userid, itemid, rate from datatable where folduserid != " + fold;
 
+		try (Connection conn = GetConnection.getSimpleConnection();
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(selectSQL);) {
+
+			long previousUserId = -1;
+			while (rs.next()) {
+
+				Long userId = rs.getLong("userid");
+				if (previousUserId != userId) {
+					this.usersDelimiter.add(Long.valueOf(this.size()));
+					previousUserId = userId;
+				}
+
+				Long itemId = rs.getLong("itemid");
+				if (this.biggerItemId < itemId) {
+					this.biggerItemId = itemId;
+				}
+
+				UserItemScorer uis = new UserItemScorer();
+				uis.setItemId(itemId);
+				uis.setUserId(userId);
+				//uis.setDate(rs.getTimestamp("dataavaliacao"));
+
+				try {
+					uis.setNota(Integer.valueOf(rs.getString("rate")));
+				} catch (NumberFormatException nfe) {
+					uis.setNota(0);
+				}
+				this.addToUniqueUsers(uis.getUserId());
+				this.addToUniqueItens(uis.getItemId());
+				this.add(uis);
+			}
+
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	public void saveStratiefMatrix(StratifiedMatrix stratifiedMatrix)

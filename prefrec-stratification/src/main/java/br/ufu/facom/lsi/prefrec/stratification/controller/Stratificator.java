@@ -127,7 +127,9 @@ public class Stratificator {
 		this.stratifyByUser();
 		this.stratifiedMatrixByUser.setPartitionsFromItem(this.stratifiedMatrix.getPartitions());
 		//Write output
-		this.writeStratifiedMatrixOutput(this.stratifiedMatrixByUser, "../StratifiedMatrixByUser.prefrecstratificator");
+		//this.writeStratifiedMatrixOutput(this.stratifiedMatrixByUser, "../StratifiedMatrixByUser.prefrecstratificator");
+		//save on database
+		new UserItemScorerList().saveStratiefMatrix(this.stratifiedMatrixByUser);
 	}
 
 	private Integer[] getColumnFrom(int column, Integer[][] ratings) {

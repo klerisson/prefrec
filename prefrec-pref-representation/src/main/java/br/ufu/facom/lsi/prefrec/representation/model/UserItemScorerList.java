@@ -81,10 +81,11 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 			throw e;
 		}
 	}
-	
-	public void loadByUserFold(int fold) throws Exception{
-		
-		String selectSQL = "select userid, itemid, rate from datatable where folduserid != " + fold;
+
+	public void loadByUserFold(int fold) throws Exception {
+
+		String selectSQL = "select userid, itemid, rate from datatable where folduserid != "
+				+ fold;
 
 		try (Connection conn = GetConnection.getSimpleConnection();
 				Statement statement = conn.createStatement();
@@ -107,7 +108,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 				UserItemScorer uis = new UserItemScorer();
 				uis.setItemId(itemId);
 				uis.setUserId(userId);
-				//uis.setDate(rs.getTimestamp("dataavaliacao"));
+				// uis.setDate(rs.getTimestamp("dataavaliacao"));
 
 				try {
 					uis.setNota(Integer.valueOf(rs.getString("rate")));
@@ -134,30 +135,34 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 				PreparedStatement preparedStatement = conn
 						.prepareStatement(sql)) {
 
-			TreeMap<Integer, List<Integer[]>> userFolders = stratifiedMatrix.getPartitions();
-			TreeMap<Integer, List<Integer[]>> itemFolders = stratifiedMatrix.getPartitionsFromItem();
+			TreeMap<Integer, List<Integer[]>> userFolders = stratifiedMatrix
+					.getPartitions();
+			TreeMap<Integer, List<Integer[]>> itemFolders = stratifiedMatrix
+					.getPartitionsFromItem();
 			Long[] usersId = stratifiedMatrix.getUsersId();
 			Long[] itemsId = stratifiedMatrix.getItemsId();
 			Integer[][] ratings = stratifiedMatrix.getRatings();
-			
-			Iterator<Integer> userFolderIterator = userFolders.navigableKeySet().iterator();
+
+			Iterator<Integer> userFolderIterator = userFolders
+					.navigableKeySet().iterator();
 			int currentUserFold = userFolderIterator.next();
 			int counterUserInserted = 0;
-			
-			Iterator<Integer> itemFolderIterator = itemFolders.navigableKeySet().iterator();
+
+			Iterator<Integer> itemFolderIterator = itemFolders
+					.navigableKeySet().iterator();
 			int currentItemFold = itemFolderIterator.next();
 			int counterItemInserted = 0;
-			
-			for(int i = 0; i < usersId.length; i++){
-				
+
+			for (int i = 0; i < usersId.length; i++) {
+
 				int userOnFold = userFolders.get(currentUserFold).size();
-				if(counterUserInserted == userOnFold){
+				if (counterUserInserted == userOnFold) {
 					currentUserFold = userFolderIterator.next();
 					counterUserInserted = 0;
 				}
-				
-				for(int j = 0; j < itemsId.length; j++){
-					
+
+				for (int j = 0; j < itemsId.length; j++) {
+
 					int itemOnFold = itemFolders.get(currentItemFold).size();
 					preparedStatement.setLong(1, usersId[i]); // userid
 					preparedStatement.setLong(2, itemsId[j]); // itemid
@@ -167,9 +172,10 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 					preparedStatement.executeUpdate();
 
 					counterItemInserted++;
-					if(counterItemInserted == itemOnFold){
-						if(!itemFolderIterator.hasNext()){
-							itemFolderIterator = itemFolders.navigableKeySet().iterator();
+					if (counterItemInserted == itemOnFold) {
+						if (!itemFolderIterator.hasNext()) {
+							itemFolderIterator = itemFolders.navigableKeySet()
+									.iterator();
 						}
 						currentItemFold = itemFolderIterator.next();
 						counterItemInserted = 0;
@@ -177,7 +183,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 				}
 				counterUserInserted++;
 			}
-			
+
 		} catch (Exception e) {
 			throw e;
 		}
@@ -260,7 +266,6 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 			if (found[0] && found[1]) {
 				return result;
 			}
-
 		}
 
 		if (found[0] && found[1]) {
@@ -272,6 +277,103 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 
 	public Long getBiggerItemId() {
 		return biggerItemId;
+	}
+
+	public void loadModelUsers(int idUserFold, int idItemFold) throws Exception {
+
+		String selectSQL = "select userid, itemid, rate, folditemid from datatable where folduserid = "
+				+ idUserFold;// + " and folditemid != " + idItemFold;
+
+		try (Connection conn = GetConnection.getSimpleConnection();
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(selectSQL);) {
+
+			long previousUserId = -1;
+			while (rs.next()) {
+
+				Long userId = rs.getLong("userid");
+				if (previousUserId != userId) {
+					this.usersDelimiter.add(Long.valueOf(this.size()));
+					previousUserId = userId;
+				}
+
+				Long itemId = rs.getLong("itemid");
+				if (this.biggerItemId < itemId) {
+					this.biggerItemId = itemId;
+				}
+
+				UserItemScorer uis = new UserItemScorer();
+				uis.setItemId(itemId);
+				uis.setUserId(userId);
+				// uis.setDate(rs.getTimestamp("dataavaliacao"));
+
+				try {
+
+					if (rs.getLong("folditemid") == idItemFold) {
+						uis.setNota(0);
+					} else {
+						uis.setNota(rs.getInt("rate"));
+					}
+					
+				} catch (NumberFormatException nfe) {
+					uis.setNota(0);
+				}
+				this.addToUniqueUsers(uis.getUserId());
+				this.addToUniqueItens(uis.getItemId());
+				this.add(uis);
+			}
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * @return the usersDelimiter
+	 */
+	public LinkedList<Long> getUsersDelimiter() {
+		return usersDelimiter;
+	}
+
+	public List<Integer> fetchAllDistinctItems() throws Exception {
+
+		String selectSQL = "select distinct(itemid) from datatable order by itemid";
+		List<Integer> result = new ArrayList<>();
+		try (Connection conn = GetConnection.getSimpleConnection();
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(selectSQL);) {
+
+			while (rs.next()) {
+				Long userId = rs.getLong("userid");
+				result.add(userId.intValue());
+			}
+
+			return result;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	public Map<Integer, Double> fetchValidationFold(int userId, int idItemFold) throws Exception {
+				
+		String selectSQL = "select itemid, rate from datatable where folditemid = " + idItemFold + " and " +
+		" userid = " + userId + " and rate != 0";
+		
+		Map<Integer, Double> result = new HashMap<>();
+		try (Connection conn = GetConnection.getSimpleConnection();
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(selectSQL);) {
+			
+			while (rs.next()) {
+				int itemId = rs.getInt("itemid");
+				int rate = rs.getInt("rate");
+				
+				result.put(itemId, new Double(rate));
+			}
+			return result;
+			
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 }

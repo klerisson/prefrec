@@ -13,6 +13,7 @@
 		<module>prefrec-stratification</module>
 		<module>prefrec-pref-mining</module>
 		<module>prefrec-execution</module>
+		<module>prefrec-recommender</module>
 	</modules>
 	<dependencies>
 		<dependency>
@@ -63,7 +64,7 @@
 		<dependency>
 			<groupId>cprefminer</groupId>
 			<artifactId>cprefminermulti</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2</version>
 		</dependency>
 	</dependencies>
 

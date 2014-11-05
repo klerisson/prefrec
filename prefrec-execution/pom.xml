@@ -28,6 +28,11 @@
 		<artifactId>prefrec-pref-mining</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>br.ufu.facom.lsi</groupId>
+		<artifactId>prefrec-recommender</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
   
 </project>

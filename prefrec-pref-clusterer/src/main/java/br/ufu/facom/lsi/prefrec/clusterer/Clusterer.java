@@ -3,8 +3,6 @@ package br.ufu.facom.lsi.prefrec.clusterer;
 import gov.sandia.cognition.learning.algorithm.clustering.AffinityPropagation;
 import gov.sandia.cognition.math.DivergenceFunction;
 
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -17,6 +15,8 @@ import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.apache.commons.math3.ml.clustering.FuzzyKMeansClusterer;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
+import org.apache.commons.math3.ml.clustering.MultiKMeansPlusPlusClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 
@@ -28,20 +28,21 @@ import br.ufu.facom.lsi.prefrec.representation.controller.PrefMatrixScorer;
  * @author Klerisson
  *
  */
-public class Main {
+public class Clusterer {
 
-	private static Map<DoublePoint, Long> userScoreDoublePoint = new LinkedHashMap<>();
-	private static int matrixLength;
+	private Map<DoublePoint, Long> userScoreDoublePoint = new LinkedHashMap<>();
+	private Map<Long, List<Map<Long, Double[][]>>> cluster;
+	private int matrixLength;
 
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public void execute(PrefMatrixScorer pms, String[] args) {
 
 		try {
 			System.out.println("Início: " + new Date());
-			PrefMatrixScorer pms = new PrefMatrixScorer();
-			pms.deserialize();
+			// PrefMatrixScorer pms = new PrefMatrixScorer();
+			// pms.deserialize();
 
 			// cluster
 			switch (args[0]) {
@@ -58,7 +59,7 @@ public class Main {
 
 				List<Cluster<DoublePoint>> clusters = dbscan
 						.cluster(toDoublePointList(pms));
-				serializeOutputs(clusterVectorToMatrix(clusters));
+				this.cluster = clusterVectorToMatrix(clusters);
 				break;
 
 			case "FUZZY":
@@ -68,7 +69,7 @@ public class Main {
 				List<CentroidCluster<DoublePoint>> clustersFuzzy = fkmc
 						.cluster(toDoublePointList(pms));
 
-				serializeOutputs(clusterVectorToMatrix(clustersFuzzy));
+				this.cluster = clusterVectorToMatrix(clustersFuzzy);
 				break;
 
 			case "AFFINITY":
@@ -80,7 +81,20 @@ public class Main {
 				List<gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster<DoublePoint>>
 				clustersAff = ap.getResult();
 				
-				serializeOutputs(clusterAffinityVectorToMatrix(clustersAff));
+				this.cluster = clusterAffinityVectorToMatrix(clustersAff);
+				break;
+				
+			case "KMEANSPLUSPLUS":
+				KMeansPlusPlusClusterer<DoublePoint> kMeanPlusPlus = new KMeansPlusPlusClusterer<>(2);
+				List<CentroidCluster<DoublePoint>> clustersMKmeansPlusPlus = kMeanPlusPlus.cluster(toDoublePointList(pms));
+				this.cluster =  clusterVectorToMatrix(clustersMKmeansPlusPlus);
+				break;
+				
+			case "MULTIKMEANS":
+				KMeansPlusPlusClusterer<DoublePoint> kMean = new KMeansPlusPlusClusterer<>(3);
+				MultiKMeansPlusPlusClusterer<DoublePoint> mKMeans = new MultiKMeansPlusPlusClusterer<>(kMean, 5);
+				List<CentroidCluster<DoublePoint>> clustersMKmeans = mKMeans.cluster(toDoublePointList(pms));
+				this.cluster =  clusterVectorToMatrix(clustersMKmeans);
 				break;
 			}
 	
@@ -90,7 +104,7 @@ public class Main {
 		}
 	}
 
-	private static Map<Long, List<Map<Long, Double[][]>>> clusterAffinityVectorToMatrix(
+	private Map<Long, List<Map<Long, Double[][]>>> clusterAffinityVectorToMatrix(
 			List<gov.sandia.cognition.learning.algorithm.clustering.cluster.CentroidCluster<DoublePoint>> clusters) {
 		
 		Map<Long, List<Map<Long, Double[][]>>> matrix = new LinkedHashMap<>();
@@ -120,23 +134,23 @@ public class Main {
 		return matrix;
 	}
 
-	private static void serializeOutputs(
-			Map<Long, List<Map<Long, Double[][]>>> cluster) throws Exception {
+//	private void serializeOutputs(
+//			Map<Long, List<Map<Long, Double[][]>>> cluster) throws Exception {
+//
+//		try (FileOutputStream fout = new FileOutputStream(
+//				"../ClusterOutput.prefrecCluster");
+//				ObjectOutputStream oos = new ObjectOutputStream(fout)) {
+//
+//			oos.writeObject(cluster);
+//			oos.flush();
+//			fout.flush();
+//
+//		} catch (Exception e) {
+//			throw e;
+//		}
+//	}
 
-		try (FileOutputStream fout = new FileOutputStream(
-				"../ClusterOutput.prefrecCluster");
-				ObjectOutputStream oos = new ObjectOutputStream(fout)) {
-
-			oos.writeObject(cluster);
-			oos.flush();
-			fout.flush();
-
-		} catch (Exception e) {
-			throw e;
-		}
-	}
-
-	private static <T extends Cluster<DoublePoint>> Map<Long, List<Map<Long, Double[][]>>> clusterVectorToMatrix(
+	private <T extends Cluster<DoublePoint>> Map<Long, List<Map<Long, Double[][]>>> clusterVectorToMatrix(
 			List<T> clusters) {
 
 		Map<Long, List<Map<Long, Double[][]>>> matrix = new LinkedHashMap<>();
@@ -168,7 +182,7 @@ public class Main {
 
 	}
 
-	private static List<DoublePoint> toDoublePointList(PrefMatrixScorer pms) {
+	private List<DoublePoint> toDoublePointList(PrefMatrixScorer pms) {
 
 		List<DoublePoint> result = new ArrayList<>();
 
@@ -195,6 +209,13 @@ public class Main {
 			userScoreDoublePoint.put(dp, key);
 		}
 		return result;
+	}
+
+	/**
+	 * @return the cluster
+	 */
+	public Map<Long, List<Map<Long, Double[][]>>> getCluster() {
+		return cluster;
 	}
 
 }

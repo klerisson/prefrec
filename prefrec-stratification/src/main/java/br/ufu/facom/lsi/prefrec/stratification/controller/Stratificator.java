@@ -1,7 +1,5 @@
 package br.ufu.facom.lsi.prefrec.stratification.controller;
 
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -308,19 +306,19 @@ public class Stratificator {
 		}
 	}
 	
-	private void writeStratifiedMatrixOutput(StratifiedMatrix sm, String fileName) throws Exception {
-
-		try (FileOutputStream fout = new FileOutputStream(fileName);
-				ObjectOutputStream oos = new ObjectOutputStream(fout)) {
-
-			oos.writeObject(sm);
-			oos.flush();
-			fout.flush();
-			
-		} catch (Exception e) {
-			throw e;
-		}
-	}
+//	private void writeStratifiedMatrixOutput(StratifiedMatrix sm, String fileName) throws Exception {
+//
+//		try (FileOutputStream fout = new FileOutputStream(fileName);
+//				ObjectOutputStream oos = new ObjectOutputStream(fout)) {
+//
+//			oos.writeObject(sm);
+//			oos.flush();
+//			fout.flush();
+//			
+//		} catch (Exception e) {
+//			throw e;
+//		}
+//	}
 
 	public StratifiedMatrix getStratifiedMatrix() {
 		return stratifiedMatrix;

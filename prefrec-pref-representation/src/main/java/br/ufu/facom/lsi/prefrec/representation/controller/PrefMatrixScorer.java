@@ -55,11 +55,7 @@ public class PrefMatrixScorer {
 								/ ((ratings[0] / ratings[1]) + 1);
 
 						rm[i][j] = score;
-					} else {
-						//Keep matrix complement
-						rm[i][j] = 0.5;
-					}
-
+					} 
 				}
 			}
 

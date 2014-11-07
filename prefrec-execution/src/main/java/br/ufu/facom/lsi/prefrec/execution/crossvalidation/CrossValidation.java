@@ -6,6 +6,7 @@ package br.ufu.facom.lsi.prefrec.execution.crossvalidation;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -67,16 +68,14 @@ public class CrossValidation {
 			// br.ufu.facom.lsi.prefrec.clusterer.Main.main(new
 			// String[]{"DBSCAN", "euclidean", "20", "4"});
 			Clusterer clusterer = new Clusterer();
-			clusterer.execute(representer.getPrefMatrixScorer(), new String[] {
-					"DBSCAN", "euclidean", "30", "4" });
 			// clusterer.execute(representer.getPrefMatrixScorer(), new String[]
 			// {
-			// "KMEANSPLUSPLUS"});
-			// clusterer.execute(representer.getPrefMatrixScorer(), new String[]
-			// {
-			// "AFFINITY"});
+			// "DBSCAN", "cosine", "1", "4" });
+			 clusterer.execute(representer.getPrefMatrixScorer(),
+			 new String[] { "KMEANSPLUSPLUS" });
+			//clusterer.execute(representer.getPrefMatrixScorer(),
+					//new String[] { "AFFINITY" });
 
-			// br.ufu.facom.lsi.prefrec.agregation.Main.main(null);
 			Agregator agregator = new Agregator(clusterer.getCluster());
 			agregator.execute();
 
@@ -112,7 +111,10 @@ public class CrossValidation {
 											.getPrefMatrixScorer()
 											.getMatrixMap().get(userId),
 									itemIdToRate, miner);
-							writeOutput(userId, i, j, precisionRecall);
+							if(precisionRecall != null){
+								writeOutput(userId, i, j, precisionRecall);
+							}
+							
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -130,9 +132,12 @@ public class CrossValidation {
 			StringBuilder msg = new StringBuilder();
 			msg.append(userId).append(",").append(userFoldId).append(",")
 					.append(itemFoldId).append(",").append(precisionRecall[0])
-					.append(",").append(precisionRecall[1]);
+					.append(",").append(precisionRecall[1]).append(System.lineSeparator());
 
-			Files.write(Paths.get("./output.cvs"), msg.toString().getBytes());
+			if(!Files.exists(Paths.get("./output.cvs"))){
+				Files.createFile(Paths.get("./output.cvs"));
+			}
+			Files.write(Paths.get("./output.cvs"), msg.toString().getBytes(), StandardOpenOption.APPEND);
 
 		} catch (IOException e) {
 			e.printStackTrace();

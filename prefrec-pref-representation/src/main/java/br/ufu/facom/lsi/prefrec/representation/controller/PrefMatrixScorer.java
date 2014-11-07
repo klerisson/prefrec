@@ -25,7 +25,7 @@ public class PrefMatrixScorer {
 		super();
 		this.matrixMap = new LinkedHashMap<Long, Double[][]>();
 	}
-	
+
 	/**
 	 * 
 	 * @return Map user as key and a matrix ItenItem
@@ -46,16 +46,16 @@ public class PrefMatrixScorer {
 
 					Double[] ratings = UserItemScorerList.getItemScoreById(
 							subListByUser, i + 1, j + 1);
-					if (i == j) {
 
+					if (ratings[0] == 0 || ratings[1] == 0 ) {
+						rm[i][j] = 0.0;
+					} else if (i == j) {
 						rm[i][j] = 0.5;
-
 					} else if (ratings != null) {
 						double score = (ratings[0] / ratings[1])
 								/ ((ratings[0] / ratings[1]) + 1);
-
 						rm[i][j] = score;
-					} 
+					}
 				}
 			}
 

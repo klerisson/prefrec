@@ -15,7 +15,9 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import br.ufu.facom.lsi.prefrec.representation.util.AppPropertiesEnum;
 import br.ufu.facom.lsi.prefrec.representation.util.GetConnection;
+import br.ufu.facom.lsi.prefrec.representation.util.PropertiesUtil;
 
 public class UserItemScorerList extends ArrayList<UserItemScorer> {
 
@@ -38,7 +40,10 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 	public void loadAll() throws Exception {
 
 		String selectSQL = "SELECT idusuario, idfilme, nota, "
-				+ "dataavaliacao FROM avaliacao_filme order by (idusuario, idfilme)";
+				+ "dataavaliacao FROM "
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.AVALICAO_TABLE)
+				+ " order by (idusuario, idfilme)";
 
 		// String selectSQL = "SELECT idusuario, idfilme, nota, "
 		// + "dataavaliacao FROM teste_a order by (idusuario, idfilme)";
@@ -84,8 +89,10 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 
 	public void loadByUserFold(int fold) throws Exception {
 
-		String selectSQL = "select userid, itemid, rate from datatable where folduserid != "
-				+ fold;
+		String selectSQL = "select userid, itemid, rate from "
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+				+ " where folduserid != " + fold;
 
 		try (Connection conn = GetConnection.getSimpleConnection();
 				Statement statement = conn.createStatement();
@@ -129,7 +136,10 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 			throws Exception {
 
 		// userid,itemid,rate,folduserid,folditemid
-		String sql = "insert into datatable values (?,?,?,?,?)";
+		String sql = "insert into "
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+				+ " values (?,?,?,?,?)";
 
 		try (Connection conn = GetConnection.getSimpleConnection();
 				PreparedStatement preparedStatement = conn
@@ -242,9 +252,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 				itemScore.put(uis.getItemId().intValue(), uis.getNota());
 			}
 		}
-
 		return itemScore;
-
 	}
 
 	public static Double[] getItemScoreById(List<UserItemScorer> list, long id,
@@ -281,8 +289,11 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 
 	public void loadModelUsers(int idUserFold, int idItemFold) throws Exception {
 
-		String selectSQL = "select userid, itemid, rate, folditemid from datatable where folduserid = "
-				+ idUserFold;// + " and folditemid != " + idItemFold;
+		String selectSQL = "select userid, itemid, rate, folditemid from "
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+				+ " where folduserid = " + idUserFold;// + " and folditemid != "
+														// + idItemFold;
 
 		try (Connection conn = GetConnection.getSimpleConnection();
 				Statement statement = conn.createStatement();
@@ -314,7 +325,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 					} else {
 						uis.setNota(rs.getInt("rate"));
 					}
-					
+
 				} catch (NumberFormatException nfe) {
 					uis.setNota(0);
 				}
@@ -336,7 +347,10 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 
 	public List<Integer> fetchAllDistinctItems() throws Exception {
 
-		String selectSQL = "select distinct(itemid) from datatable order by itemid";
+		String selectSQL = "select distinct(itemid) from "
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+				+ " order by itemid";
 		List<Integer> result = new ArrayList<>();
 		try (Connection conn = GetConnection.getSimpleConnection();
 				Statement statement = conn.createStatement();
@@ -352,25 +366,29 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 			throw e;
 		}
 	}
-	
-	public Map<Integer, Double> fetchValidationFold(int userId, int idItemFold) throws Exception {
-				
-		String selectSQL = "select itemid, rate from datatable where folditemid = " + idItemFold + " and " +
-		" userid = " + userId + " and rate != 0";
-		
+
+	public Map<Integer, Double> fetchValidationFold(int userId, int idItemFold)
+			throws Exception {
+
+		String selectSQL = "select itemid, rate from "
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+				+ " where folditemid = " + idItemFold + " and " + " userid = "
+				+ userId + " and rate != 0";
+
 		Map<Integer, Double> result = new HashMap<>();
 		try (Connection conn = GetConnection.getSimpleConnection();
 				Statement statement = conn.createStatement();
 				ResultSet rs = statement.executeQuery(selectSQL);) {
-			
+
 			while (rs.next()) {
 				int itemId = rs.getInt("itemid");
 				int rate = rs.getInt("rate");
-				
+
 				result.put(itemId, new Double(rate));
 			}
 			return result;
-			
+
 		} catch (Exception e) {
 			throw e;
 		}

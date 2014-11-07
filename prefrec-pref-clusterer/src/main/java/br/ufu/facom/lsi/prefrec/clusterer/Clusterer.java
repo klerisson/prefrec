@@ -85,7 +85,7 @@ public class Clusterer {
 				break;
 				
 			case "KMEANSPLUSPLUS":
-				KMeansPlusPlusClusterer<DoublePoint> kMeanPlusPlus = new KMeansPlusPlusClusterer<>(2);
+				KMeansPlusPlusClusterer<DoublePoint> kMeanPlusPlus = new KMeansPlusPlusClusterer<>(4);
 				List<CentroidCluster<DoublePoint>> clustersMKmeansPlusPlus = kMeanPlusPlus.cluster(toDoublePointList(pms));
 				this.cluster =  clusterVectorToMatrix(clustersMKmeansPlusPlus);
 				break;

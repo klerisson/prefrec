@@ -139,14 +139,14 @@ public class Miner {
 																// que o item da
 																// direita
 					Bituple b = new Bituple(
-							features.get(new Key(i.getKey() + 1)),
-							features.get(new Key(j.getKey() + 1)),
+							features.get(new Key(i.getKey())),
+							features.get(new Key(j.getKey())),
 							new PrefValue(1));
 					bituples.add(b);
 				}
 			}
 		}
-		return new PrefDatabase(bituples);
+		return bituples.isEmpty() ? null : new PrefDatabase(bituples);
 	}
 
 	public Validation getValidation(Double[][] choosenConcensualMatrix) {

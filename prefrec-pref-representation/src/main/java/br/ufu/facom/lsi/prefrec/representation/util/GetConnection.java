@@ -9,8 +9,6 @@ import br.ufu.facom.lsi.prefrec.representation.exception.BaseAppException;
 
 public final class GetConnection {
 
-	private static final String APP_PROPERTIES = "app.properties";
-
 	public static Connection getSimpleConnection() throws BaseAppException {
 
 		String DB_CONN_STRING = null;
@@ -19,7 +17,7 @@ public final class GetConnection {
 		String PASSWORD = null;
 
 		try (InputStream in = GetConnection.class.getClassLoader()
-				.getResourceAsStream(APP_PROPERTIES)) {
+				.getResourceAsStream(PropertiesUtil.APP_PROPERTIES)) {
 
 			Properties props = new Properties();
 			props.load(in);

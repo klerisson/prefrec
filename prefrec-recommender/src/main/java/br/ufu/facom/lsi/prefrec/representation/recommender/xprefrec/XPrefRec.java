@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 
+import prefdb.model.PrefDatabase;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import control.Validation;
 
@@ -30,12 +31,17 @@ public class XPrefRec {
 		
 		Double[][] choosenConcensualMatrix = findSimilarConcensualMatrix(itemItem);
 		//Test execution 
-		//miner.getValidation().runOverModel(3, miner.toPrefDatabase(miner.loadFeatures(), itemIdToRate));
 		Validation v = miner.getValidation(choosenConcensualMatrix);
-		v.runOverModel(3, miner.toPrefDatabase(itemIdToRate));
-		
-		return new Float[]{v.getAvPrecision(), v.getAvRecall()};
-		
+		try {
+			PrefDatabase pdb = miner.toPrefDatabase(itemIdToRate);
+			if(pdb != null) {
+				v.runOverModel(3, pdb);
+				return new Float[]{v.getAvPrecision(), v.getAvRecall()};
+			}
+		} catch (Exception e) {
+			throw e;
+		}
+		return null;	
 	}
 
 	private Double[][] findSimilarConcensualMatrix(Double[][] itemItem) {
@@ -49,6 +55,7 @@ public class XPrefRec {
 			double currentDistance = this.euclideanDistance.compute(itemItemVector, concensualVector);
 			if(currentDistance <= distance){
 				result = concensualTemp;
+				distance = currentDistance;
 			}
 		}
 		

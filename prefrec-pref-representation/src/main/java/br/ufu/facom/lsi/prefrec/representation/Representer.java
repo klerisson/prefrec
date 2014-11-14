@@ -34,7 +34,7 @@ public class Representer {
 			uisList.loadByUserFold(fold);
 
 			pms = new PrefMatrixScorer();
-			pms.fill(uisList);
+			pms.fill2(uisList);
 			//pms.serialize();
 
 		} catch (Exception e) {

@@ -26,38 +26,54 @@ public class Agregator {
 
 			// Reading cluster
 			for (Long id : clusterToUserMatrixScorer.keySet()) {
-				
+
 				Double[][] concensualMatrix = initMatrix(length);
 				Double[][] counter = initMatrix(length);
-				
+				Double qtdeusers=0.0;
+
 				// Reading Matrix
 				Iterator<Map<Long, Double[][]>> it = clusterToUserMatrixScorer
 						.get(id).iterator();
-				
+
 				while (it.hasNext()) {
+					qtdeusers++;
 					Map<Long, Double[][]> map = it.next();
 					for (Double[][] temp : map.values()) {
-						
+
 						for (int k = 0; k < temp.length; k++) {
 							for (int h = 0; h < temp[k].length; h++) {
-								if(temp[k][h] != 0) {
+								if (temp[k][h] != 0.0 && temp[k][h] !=null) {
 									concensualMatrix[k][h] += temp[k][h];
 									counter[k][h]++;
 								}
 							}
 						}
-						
+
 					}
 				}
 
 				for (int k = 0; k < concensualMatrix.length; k++) {
 					for (int h = 0; h < concensualMatrix[k].length; h++) {
-						if(counter[k][h] != 0){
-						concensualMatrix[k][h] = concensualMatrix[k][h]
-								/ counter[k][h];
+						// more than half users rate the item
+						if ((counter[k][h] <= ((qtdeusers) / 2)) || k==h) {
+							concensualMatrix[k][h] = 0.5;
+						} else {
+							concensualMatrix[k][h] = concensualMatrix[k][h]
+									/ counter[k][h];
+							
 						}
 					}
 				}
+				
+				//for(int l = 0; l< concensualMatrix.length; l++){
+					//for(int m = 0; m < concensualMatrix[l].length; m++){
+						
+						//System.out.print( concensualMatrix[l][m]);
+						//System.out.print(" ");
+						
+					//}
+					//System.out.println();
+				//}
 
 				concensualMatrixMap.put(concensualMatrix,
 						clusterToUserMatrixScorer.get(id.intValue()));

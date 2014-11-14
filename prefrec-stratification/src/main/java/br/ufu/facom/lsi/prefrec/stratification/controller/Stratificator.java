@@ -120,7 +120,18 @@ public class Stratificator {
 			}
 			this.stratifiedMatrix.addRestOfColumns(restOfColumns);
 		}
+		//++++++++++++++
 		
+		Integer[][] ratingsTemp = this.stratifiedMatrix.getRatings();
+		for(int k = 0; k < ratingsTemp.length;k++){
+			for(int h = 0; h < ratingsTemp[k].length; h++){
+				System.out.print(ratingsTemp[k][h]);
+				System.out.print(" ");
+			}
+			System.out.println("|");
+		}
+		
+		//+++++++++
 		this.usedItens.clear();
 		this.stratifyByUser();
 		this.stratifiedMatrixByUser.setPartitionsFromItem(this.stratifiedMatrix.getPartitions());

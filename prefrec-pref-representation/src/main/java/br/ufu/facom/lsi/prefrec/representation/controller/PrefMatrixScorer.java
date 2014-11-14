@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,51 @@ public class PrefMatrixScorer {
 		return matrixMap;
 	}
 
+	public void fill2(UserItemScorerList uisList) {
+
+		int matrixSize = uisList.getUniqueItens().size();
+		List<Long> uniqueItens = new ArrayList<>(uisList.getUniqueItens());
+		while (uisList.hasNext()) {
+			List<UserItemScorer> subListByUser = uisList.nextSubList();
+			Double[][] rm = new Double[matrixSize][matrixSize];
+
+			int rowId = 0;
+			for (Long i : uniqueItens) {
+				int columnId = 0;
+				for (Long j : uniqueItens) {
+
+					Double[] ratings = UserItemScorerList.getItemScoreById(
+							subListByUser, i, j);
+
+					if (i == j) {
+						rm[rowId][columnId] = 0.5;
+					} else if (ratings[0] == 0 || ratings[1] == 0) {
+						rm[rowId][columnId] = 0.0;
+					} else if (ratings != null) {
+						double score = (ratings[0] / ratings[1])
+								/ ((ratings[0] / ratings[1]) + 1);
+						rm[rowId][columnId] = score;
+					}
+					columnId++;
+				}
+				rowId++;
+			}
+			for (int l = 0; l < matrixSize; l++) {
+				for (int m = 0; m < matrixSize; m++) {
+
+					System.out.print(rm[l][m]);
+					System.out.print(" ");
+
+				}
+				System.out.println("|");
+			}
+
+			this.matrixMap.put(subListByUser.get(0).getUserId(), rm);
+		}
+		
+		
+	}
+
 	public void fill(UserItemScorerList uisList) {
 
 		int matrixSize = uisList.getBiggerItemId().intValue();
@@ -47,10 +93,10 @@ public class PrefMatrixScorer {
 					Double[] ratings = UserItemScorerList.getItemScoreById(
 							subListByUser, i + 1, j + 1);
 
-					if (ratings[0] == 0 || ratings[1] == 0 ) {
-						rm[i][j] = 0.0;
-					} else if (i == j) {
+					if (i == j) {
 						rm[i][j] = 0.5;
+					} else if (ratings[0] == 0 || ratings[1] == 0) {
+						rm[i][j] = 0.0;
 					} else if (ratings != null) {
 						double score = (ratings[0] / ratings[1])
 								/ ((ratings[0] / ratings[1]) + 1);
@@ -58,7 +104,6 @@ public class PrefMatrixScorer {
 					}
 				}
 			}
-
 			this.matrixMap.put(subListByUser.get(0).getUserId(), rm);
 			// System.out.println("Size: " + this.matrixMap.size());
 			// if(this.matrixMap.size() == 50){
@@ -68,9 +113,7 @@ public class PrefMatrixScorer {
 			// e.printStackTrace();
 			// }
 			// }
-
 		}
-
 	}
 
 	public void serialize() throws Exception {

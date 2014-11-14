@@ -20,23 +20,6 @@ import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec;
 /**
  * @author Klerisson
  *
- *         -- treinamento, p/ cada estrato de usuario i faça (geracao do modelo)
- *         select userid,itemid, rate from datatable where folduserid!=i;
- * 
- *         -- teste, para cada estrato de item j faça select userid,itemid, rate
- *         from datatable where folduserid=i and folditemid!=j;
- * 
- *         select userid,itemid, rate from datatable where folduserid=i and
- *         folditemid=j; -- guardar itens a serem recomendados
- * 
- *         -- para cada usuario k faça (recomendacao) -- gere a matriz de
- *         preferencias e encontre o grupo mais semelhante (comparação entre as
- *         matrizes), faça a recomendação dos itens do estrato de itens j --
- *         passar para o cprefminer a matriz e lista de itens
- * 
- *         -- pegar resultado e validar, calculando precisao, recall e acurácia,
- *         gravar estatistticas, verificar com o guilherme se o cpref já possui
- *         essa parte
  */
 public class CrossValidation {
 
@@ -68,14 +51,20 @@ public class CrossValidation {
 			// br.ufu.facom.lsi.prefrec.clusterer.Main.main(new
 			// String[]{"DBSCAN", "euclidean", "20", "4"});
 			Clusterer clusterer = new Clusterer();
-			// clusterer.execute(representer.getPrefMatrixScorer(), new String[]
-			// {
-			// "DBSCAN", "cosine", "1", "4" });
-			 clusterer.execute(representer.getPrefMatrixScorer(),
-			 new String[] { "KMEANSPLUSPLUS" });
+			//clusterer.execute(representer.getPrefMatrixScorer(), new String[]
+			 //{
+			 //"DBSCAN", "euclidean", "1", "4" });
 			//clusterer.execute(representer.getPrefMatrixScorer(),
-					//new String[] { "AFFINITY" });
+			 //new String[] { "MULTIKMEANS" });
+			//clusterer.execute(representer.getPrefMatrixScorer(),
+				//	new String[] { "AFFINITY" });
+			
+			clusterer.execute(representer.getPrefMatrixScorer(), new String[]
+			 {
+			 "FUZZY", "3", "1.2" });
 
+			//clusterer.execute(representer.getPrefMatrixScorer(), new String[]{""});
+			
 			Agregator agregator = new Agregator(clusterer.getCluster());
 			agregator.execute();
 

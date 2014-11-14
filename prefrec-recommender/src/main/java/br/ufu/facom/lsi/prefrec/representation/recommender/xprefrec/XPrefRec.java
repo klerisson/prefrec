@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.ml.distance.EuclideanDistance;
 
 import prefdb.model.PrefDatabase;
+import br.ufu.facom.lsi.prefrec.clusterer.distance.MyEuclideanDistance;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import control.Validation;
 
 public class XPrefRec {
 
 	private Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap;
-	private EuclideanDistance euclideanDistance; 
+	private MyEuclideanDistance myEuclideanDistance; 
 	
 	/**
 	 * @param concensualMatrixMap
@@ -23,11 +23,21 @@ public class XPrefRec {
 			Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap) {
 		super();
 		this.concensualMatrixMap = concensualMatrixMap;
-		this.euclideanDistance = new EuclideanDistance();
+		this.myEuclideanDistance = new MyEuclideanDistance();
 	}
 
 	public Float[] run(Long userId, Double[][] itemItem, Map<Integer, Double> itemIdToRate,
 			Miner miner) throws Exception {
+		
+		//for(int l = 0; l< itemItem.length; l++){
+		//for(int m = 0; m < itemItem[l].length; m++){
+			
+			//System.out.print( itemItem[l][m]);
+			//System.out.print(" ");
+			
+		//}
+		//System.out.println();
+	//}
 		
 		Double[][] choosenConcensualMatrix = findSimilarConcensualMatrix(itemItem);
 		//Test execution 
@@ -52,7 +62,7 @@ public class XPrefRec {
 		for(Double[][] concensualTemp : this.concensualMatrixMap.keySet()){
 			
 			double[] concensualVector = matrixToVector(concensualTemp);
-			double currentDistance = this.euclideanDistance.compute(itemItemVector, concensualVector);
+			double currentDistance = this.myEuclideanDistance.compute(itemItemVector, concensualVector);
 			if(currentDistance <= distance){
 				result = concensualTemp;
 				distance = currentDistance;
@@ -67,7 +77,7 @@ public class XPrefRec {
 		List<Double> result = new ArrayList<>();
 		
 		for(int i = 0; i < matrix.length; i++){
-			for(int j = 0; j < matrix.length; j++){
+			for(int j = i+1; j < matrix.length; j++){
 				result.add(matrix[i][j]);
 			}
 		}

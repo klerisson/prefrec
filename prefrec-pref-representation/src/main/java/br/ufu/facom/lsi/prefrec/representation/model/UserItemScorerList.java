@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 				+ "dataavaliacao FROM "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.AVALICAO_TABLE)
-				+ " order by (idusuario, idfilme)";
+				+ " order by idusuario, idfilme";
 
 		// String selectSQL = "SELECT idusuario, idfilme, nota, "
 		// + "dataavaliacao FROM teste_a order by (idusuario, idfilme)";
@@ -246,7 +247,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 	 */
 	public Map<Integer, Integer> getItemScoreByUserId(Long userId) {
 
-		Map<Integer, Integer> itemScore = new HashMap<>();
+		Map<Integer, Integer> itemScore = new LinkedHashMap<>();
 		for (UserItemScorer uis : this) {
 			if (uis.getUserId().equals(userId)) {
 				itemScore.put(uis.getItemId().intValue(), uis.getNota());

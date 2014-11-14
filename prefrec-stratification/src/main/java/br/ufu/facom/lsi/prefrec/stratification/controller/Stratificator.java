@@ -183,7 +183,7 @@ public class Stratificator {
 				for (int j = 0; j < this.ratings.length; j++) {
 					col[j] = this.ratings[j][i];
 				}
-				this.stratifiedMatrix.addColumn(col, stratum, i, this.users);
+				this.stratifiedMatrix.addColumn(col, stratum, this.itens[i].intValue(), this.users);
 				itensOnRangeCounter++;
 				this.usedItens.add(i);
 			}
@@ -298,7 +298,7 @@ public class Stratificator {
 				for (int j = 0; j < this.itens.length; j++) {
 					row[j] = this.stratifiedMatrix.getRatings()[i][j];
 				}
-				this.stratifiedMatrixByUser.addRow(row, stratum, this.users[i].intValue(), this.itens);
+				this.stratifiedMatrixByUser.addRow(row, stratum, this.users[i].intValue(), this.stratifiedMatrix.getItemsId());
 				usersOnRangeCounter++;
 				this.usedItens.add(i);
 			}

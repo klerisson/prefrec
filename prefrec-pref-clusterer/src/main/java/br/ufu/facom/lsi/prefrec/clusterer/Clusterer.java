@@ -89,7 +89,7 @@ public class Clusterer {
 			case "KMEANSPLUSPLUS":
 				MyEuclideanDistance distance = new MyEuclideanDistance();
 				KMeansPlusPlusClusterer<DoublePoint> kMeanPlusPlus = new KMeansPlusPlusClusterer<>(
-						7, -1, distance);
+						12, -1, distance);
 				List<CentroidCluster<DoublePoint>> clustersMKmeansPlusPlus = kMeanPlusPlus
 						.cluster(toDoublePointList(pms));
 				this.cluster = clusterVectorToMatrix(clustersMKmeansPlusPlus,
@@ -98,7 +98,7 @@ public class Clusterer {
 
 			case "MULTIKMEANS":
 				KMeansPlusPlusClusterer<DoublePoint> kMean = new KMeansPlusPlusClusterer<>(
-						3);
+						12);
 				MultiKMeansPlusPlusClusterer<DoublePoint> mKMeans = new MultiKMeansPlusPlusClusterer<>(
 						kMean, 200);
 				List<CentroidCluster<DoublePoint>> clustersMKmeans = mKMeans
@@ -213,7 +213,7 @@ public class Clusterer {
 			List<Double> pointList = new ArrayList<>();
 			matrixLength = d.length;
 			for (int i = 0; i < matrixLength; i++) {
-				for (int j = i + 1; j < d[i].length; j++) {
+				for (int j = i+1; j < d[i].length; j++) {//teste era j=i+1
 					if (d[i][j] == null) {
 						d[i][j] = 0.0;
 						pointList.add(d[i][j]);

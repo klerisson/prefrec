@@ -18,7 +18,7 @@ public class MyEuclideanDistance implements DistanceMeasure{
 		double qtderates = 0;
 		for (int i = 0; i < p1.length; i++) {
 			// if p1[i]==0 or p2[i]==0 it doesn't use
-			if (p1[i] != 0 && p2[i] != 0 ) {
+			if (p1[i] != 0 &&  p2[i] != 0 ) {//teste &&
 				sum += FastMath.pow((p1[i] - p2[i]),2);
 				//sumP1 += FastMath.pow(p1[i], 2);
 				//sumP2 += FastMath.pow(p2[i], 2);

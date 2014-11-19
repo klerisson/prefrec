@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +38,13 @@ public class CrossValidation {
 			// String[]{Integer.toString(i)});
 			Representer representer = new Representer();
 			representer.run(i);
+			
+			Map<Integer,Integer> itemList=new HashMap<>();
+			int cont = 0;
+			for (Long id : representer.getUisList().getUniqueItens()) {// create map index to itemid
+				itemList.put(cont,id.intValue());
+				cont++;
+			}
 
 			/*
 			 * args[0] cluster typ: "DBSCAN", "FUZZY", "AFFINITY"
@@ -53,7 +61,7 @@ public class CrossValidation {
 			Clusterer clusterer = new Clusterer();
 			//clusterer.execute(representer.getPrefMatrixScorer(), new String[]
 			 //{
-			 //"DBSCAN", "euclidean", "1", "4" });
+			 //"DBSCAN", "euclidian", "0.1", "4" });
 			//clusterer.execute(representer.getPrefMatrixScorer(),
 			 //new String[] { "MULTIKMEANS" });
 			//clusterer.execute(representer.getPrefMatrixScorer(),
@@ -61,18 +69,21 @@ public class CrossValidation {
 			
 			clusterer.execute(representer.getPrefMatrixScorer(), new String[]
 			 {
-			 "FUZZY", "3", "1.2" });
+			 "FUZZY", "4", "1.2" });
 
 			//clusterer.execute(representer.getPrefMatrixScorer(), new String[]{""});
 			
 			Agregator agregator = new Agregator(clusterer.getCluster());
 			agregator.execute();
-
+		
+			
+			
 			// br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Main.main(new
 			// String[]{Integer.toString(i)});
 			// Miner miner = new Miner(agregator.getConcensualMatrixMap());
 			Miner miner = new Miner();
 			try {
+			
 				miner.buildModels(new ArrayList<Double[][]>(agregator
 						.getConcensualMatrixMap().keySet()));
 			} catch (Exception e1) {

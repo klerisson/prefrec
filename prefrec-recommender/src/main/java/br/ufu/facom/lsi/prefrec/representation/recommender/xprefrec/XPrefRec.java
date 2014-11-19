@@ -77,7 +77,7 @@ public class XPrefRec {
 		List<Double> result = new ArrayList<>();
 		
 		for(int i = 0; i < matrix.length; i++){
-			for(int j = i+1; j < matrix.length; j++){
+			for(int j = i+1; j < matrix.length; j++){//teste era j=i+1
 				result.add(matrix[i][j]);
 			}
 		}

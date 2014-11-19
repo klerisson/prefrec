@@ -42,7 +42,7 @@ public class Miner {
 			for (Double[][] concensualMatrix : concensualMatrixList) {
 
 				Validation validation = toValidation(concensualMatrix, features);
-				// constrói o modelo (tabelas de probabilidade)
+				// constrï¿½i o modelo (tabelas de probabilidade)
 				validation.buildModel();
 				this.validationMap.put(concensualMatrix, validation);
 			}
@@ -75,27 +75,32 @@ public class Miner {
 
 		Integer[] maxMult = { 1, 3, 1, 4, 1, 0 };
 
-		Database d = new Database("../miningoutput/", attribsList, "user.cpm",
+		Database d = new Database("../miningoutput/Fbprefrec/", attribsList, "user.cpm",
 				maxMult, ',');
 		Map<Key, FullTuple> tuples = d.getMapFullTuples();
+		for(Map.Entry<Key, FullTuple> entry : tuples.entrySet()) {
+			System.out.println(entry.getValue().toString());
+		}
 		return tuples;
 	}
 
 	/**
 	 * 
 	 * Converte um mapa com id do item e atributos associados a uma matriz item
-	 * x item em um objeto Validation compatível com o CPrefMiner Multi.
+	 * x item em um objeto Validation compatï¿½vel com o CPrefMiner Multi.
 	 * 
 	 * @param matrix
-	 *            matriz item x item de um usuário/cluster
+	 *            matriz item x item de um usuï¿½rio/cluster
 	 * @param features
-	 *            mapa com os atributos/características de um filme
-	 * @return Um objeto Validation do CPrefMiner Multi, de tal modo que é
-	 *         possível executar o minerador sobre as avaliações da matriz
-	 *         considerando as características dos itens.
+	 *            mapa com os atributos/caracterï¿½sticas de um filme
+	 * @return Um objeto Validation do CPrefMiner Multi, de tal modo que ï¿½
+	 *         possï¿½vel executar o minerador sobre as avaliaï¿½ï¿½es da matriz
+	 *         considerando as caracterï¿½sticas dos itens.
 	 * @throws Exception
 	 *             -
 	 */
+	//FIXME Precisamos de um mapa da forma Map<Integer,Integer> onde a 
+	// chave Ã© o Ã­ndice da matriz e o valor Ã© o ID do item (filme)
 	public Validation toValidation(Double[][] matrix,
 			Map<Key, FullTuple> features) throws Exception {
 		ArrayList<Bituple> bituples = new ArrayList<>();
@@ -130,7 +135,7 @@ public class Miner {
 		ArrayList<Bituple> bituples = new ArrayList<>();
 		for (Map.Entry<Integer, Double> i : ids.entrySet()) {
 			for (Map.Entry<Integer, Double> j : ids.entrySet()) {
-				if (i != j && i.getValue() > j.getValue()) { // não pode ser o
+				if (i != j && i.getValue() > j.getValue()) { // nï¿½o pode ser o
 																// mesmo item e
 																// o item da
 																// esquerda deve

@@ -1,14 +1,21 @@
 package br.ufu.facom.lsi.prefrec.representation.controller;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,15 +42,19 @@ public class PrefMatrixScorer {
 		return matrixMap;
 	}
 
-	public void fill2(UserItemScorerList uisList) {
+	public void fill2(UserItemScorerList uisList) throws IOException {
 
 		int matrixSize = uisList.getUniqueItens().size();
 		List<Long> uniqueItens = new ArrayList<>(uisList.getUniqueItens());
+
 		while (uisList.hasNext()) {
 			List<UserItemScorer> subListByUser = uisList.nextSubList();
 			Double[][] rm = new Double[matrixSize][matrixSize];
+			//BufferedWriter bw = new BufferedWriter(new FileWriter("matrix_"
+				//	+ subListByUser.get(0).getUserId()));
 
 			int rowId = 0;
+			//Double[][] rawRm = new Double[matrixSize][matrixSize];
 			for (Long i : uniqueItens) {
 				int columnId = 0;
 				for (Long j : uniqueItens) {
@@ -51,32 +62,37 @@ public class PrefMatrixScorer {
 					Double[] ratings = UserItemScorerList.getItemScoreById(
 							subListByUser, i, j);
 
+					//double ratio = ratings[1] != 0 ? (ratings[0] / ratings[1]): 0;
+					//rawRm[rowId][columnId] = columnId < rowId ? ratio : -1;
+					//bw.write(String.valueOf(rawRm[rowId][columnId]) + ";");
+
 					if (i == j) {
 						rm[rowId][columnId] = 0.5;
-					} else if (ratings[0] == 0 || ratings[1] == 0) {
+					} else if (ratings[0] == 0 || ratings[1] == 0) {// ratings[0]
+																	// == 0 ||
+																	// ratings[1]
+																	// == 0
 						rm[rowId][columnId] = 0.0;
 					} else if (ratings != null) {
+
 						double score = (ratings[0] / ratings[1])
 								/ ((ratings[0] / ratings[1]) + 1);
-						rm[rowId][columnId] = score;
+						BigDecimal scoreR = new BigDecimal(score).setScale(3,
+								RoundingMode.HALF_EVEN);
+
+						rm[rowId][columnId] = scoreR.doubleValue();
+
 					}
+					//bw.write(String.valueOf(rm[rowId][columnId]) + ";");
 					columnId++;
 				}
+				//bw.write("\n");
 				rowId++;
-			}
-			for (int l = 0; l < matrixSize; l++) {
-				for (int m = 0; m < matrixSize; m++) {
-
-					System.out.print(rm[l][m]);
-					System.out.print(" ");
-
-				}
-				System.out.println("|");
-			}
-
+			}	
+			//bw.flush();
+			//bw.close();
 			this.matrixMap.put(subListByUser.get(0).getUserId(), rm);
 		}
-		
 		
 	}
 

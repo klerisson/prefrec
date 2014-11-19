@@ -1,5 +1,7 @@
 package br.ufu.facom.lsi.prefrec.agregation;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,19 +60,22 @@ public class Agregator {
 						if ((counter[k][h] <= ((qtdeusers) / 2)) || k==h) {
 							concensualMatrix[k][h] = 0.5;
 						} else {
-							concensualMatrix[k][h] = concensualMatrix[k][h]
-									/ counter[k][h];
+							BigDecimal consensoR= new BigDecimal((concensualMatrix[k][h]
+									/ counter[k][h])).setScale(3, RoundingMode.HALF_EVEN);
+							concensualMatrix[k][h] = consensoR.doubleValue();
 							
 						}
 					}
 				}
-				
+			 
 				//for(int l = 0; l< concensualMatrix.length; l++){
 					//for(int m = 0; m < concensualMatrix[l].length; m++){
-						
-						//System.out.print( concensualMatrix[l][m]);
+						//BigDecimal bd = new BigDecimal(concensualMatrix[l][m]+concensualMatrix[m][l]).setScale(3, RoundingMode.HALF_EVEN);
+						//System.out.println(bd.doubleValue());
+						//if(bd.doubleValue()!=1){
+						//System.out.print(concensualMatrix[l][m]+concensualMatrix[m][l]);
 						//System.out.print(" ");
-						
+						//}
 					//}
 					//System.out.println();
 				//}

@@ -75,7 +75,7 @@ public class Miner {
 
 		Integer[] maxMult = { 1, 3, 1, 4, 1, 0 };
 
-		Database d = new Database("../miningoutput/Cleiane/", attribsList, "user.cpm",
+		Database d = new Database("../miningoutput/Fbprefrec/", attribsList, "user.cpm",
 				maxMult, ',');
 		Map<Key, FullTuple> tuples = d.getMapFullTuples();
 		for(Map.Entry<Key, FullTuple> entry : tuples.entrySet()) {

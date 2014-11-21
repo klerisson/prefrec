@@ -64,10 +64,10 @@ public class CrossValidation {
 			 //"DBSCAN", "cosine", "1", "4" });
 			//clusterer.execute(representer.getPrefMatrixScorer(),
 			 //new String[] { "MULTIKMEANS" });
-			clusterer.execute(representer.getPrefMatrixScorer(),
-			new String[] { "KMEANPLUSPLUS" });
-		            //clusterer.execute(representer.getPrefMatrixScorer(),
-					//new String[] { "AFFINITY" ,String.valueOf(i)});
+			//clusterer.execute(representer.getPrefMatrixScorer(),
+			//new String[] { "KMEANSPLUSPLUS" });
+		            clusterer.execute(representer.getPrefMatrixScorer(),
+					new String[] { "AFFINITY" ,String.valueOf(i)});
 			
 	//	clusterer.execute(representer.getPrefMatrixScorer(), new String[]
 		// {

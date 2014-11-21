@@ -95,7 +95,7 @@ public class Clusterer {
 			case "KMEANSPLUSPLUS":
 				MyEuclideanDistance distance = new MyEuclideanDistance();
 				KMeansPlusPlusClusterer<DoublePoint> kMeanPlusPlus = new KMeansPlusPlusClusterer<>(
-						2, -1, distance);
+						5, -1, distance);
 				List<CentroidCluster<DoublePoint>> clustersMKmeansPlusPlus = kMeanPlusPlus
 						.cluster(toDoublePointList(pms, 0));
 				this.cluster = clusterVectorToMatrix(clustersMKmeansPlusPlus,

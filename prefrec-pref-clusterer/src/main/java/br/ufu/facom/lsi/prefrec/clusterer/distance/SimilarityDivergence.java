@@ -32,7 +32,7 @@ public class SimilarityDivergence implements
 
 	@Override
 	public double evaluate(DoublePoint first, DoublePoint second) {
-		return -this.euclideanDistance.compute(first.getPoint(), second.getPoint());
+		return this.euclideanDistance.compute(first.getPoint(), second.getPoint());
 	}
 
 }

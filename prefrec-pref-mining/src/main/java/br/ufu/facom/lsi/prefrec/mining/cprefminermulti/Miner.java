@@ -36,12 +36,12 @@ public class Miner {
 		this.validationMap = new LinkedHashMap<>();
 	}
 
-	public void buildModels(ArrayList<Double[][]> concensualMatrixList) throws Exception {
+	public void buildModels(ArrayList<Double[][]> concensualMatrixList, Map<Integer,Integer> itemList) throws Exception {
 
 		try {
 			for (Double[][] concensualMatrix : concensualMatrixList) {
 
-				Validation validation = toValidation(concensualMatrix, features);
+				Validation validation = toValidation(concensualMatrix, features, itemList);
 				// constr�i o modelo (tabelas de probabilidade)
 				validation.buildModel();
 				this.validationMap.put(concensualMatrix, validation);
@@ -75,7 +75,7 @@ public class Miner {
 
 		Integer[] maxMult = { 1, 3, 1, 4, 1, 0 };
 
-		Database d = new Database("../miningoutput/Fbprefrec/", attribsList, "user.cpm",
+		Database d = new Database("../miningoutput/Cleiane/", attribsList, "user.cpm",
 				maxMult, ',');
 		Map<Key, FullTuple> tuples = d.getMapFullTuples();
 		for(Map.Entry<Key, FullTuple> entry : tuples.entrySet()) {
@@ -102,15 +102,19 @@ public class Miner {
 	//FIXME Precisamos de um mapa da forma Map<Integer,Integer> onde a 
 	// chave é o índice da matriz e o valor é o ID do item (filme)
 	public Validation toValidation(Double[][] matrix,
-			Map<Key, FullTuple> features) throws Exception {
+			Map<Key, FullTuple> features, Map<Integer,Integer> itemList) throws Exception {
 		ArrayList<Bituple> bituples = new ArrayList<>();
 
 		Double d = 0.5;
+		Key k1, k2;
 		for (int i = 0; i < matrix.length; i++) {
 			for (int j = 0; j < matrix[i].length; j++) {
 				if (matrix[i][j] > d) {
-					Bituple b = new Bituple(features.get(new Key(i + 1)),
-							features.get(new Key(j + 1)), new PrefValue(1));
+					k1 = new Key(itemList.get(i));
+					k2 = new Key(itemList.get(j));
+					FullTuple p1 = features.get(k1);
+					FullTuple p2 = features.get(k2);
+					Bituple b = new Bituple(p1, p2, new PrefValue(1));
 					bituples.add(b);
 				}
 			}

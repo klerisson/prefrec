@@ -6,7 +6,6 @@ package br.ufu.facom.lsi.prefrec.execution.crossvalidation;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,16 +61,19 @@ public class CrossValidation {
 			Clusterer clusterer = new Clusterer();
 			//clusterer.execute(representer.getPrefMatrixScorer(), new String[]
 			 //{
-			 //"DBSCAN", "euclidian", "0.1", "4" });
+			 //"DBSCAN", "cosine", "1", "4" });
 			//clusterer.execute(representer.getPrefMatrixScorer(),
 			 //new String[] { "MULTIKMEANS" });
 			//clusterer.execute(representer.getPrefMatrixScorer(),
-				//	new String[] { "AFFINITY" });
+			//new String[] { "KMEANSPLUSPLUS" });
+		            clusterer.execute(representer.getPrefMatrixScorer(),
+					new String[] { "AFFINITY" ,String.valueOf(i)});
 			
-			clusterer.execute(representer.getPrefMatrixScorer(), new String[]
-			 {
-			 "FUZZY", "4", "1.2" });
-
+	//	clusterer.execute(representer.getPrefMatrixScorer(), new String[]
+		// {
+			// "FUZZY", "4", "1.2" });
+			//clusterer.execute(representer.getPrefMatrixScorer(), new String[]{"XMEANS"});
+			
 			//clusterer.execute(representer.getPrefMatrixScorer(), new String[]{""});
 			
 			Agregator agregator = new Agregator(clusterer.getCluster());
@@ -86,7 +88,7 @@ public class CrossValidation {
 			try {
 			
 				miner.buildModels(new ArrayList<Double[][]>(agregator
-						.getConcensualMatrixMap().keySet()));
+						.getConcensualMatrixMap().keySet()), itemList);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

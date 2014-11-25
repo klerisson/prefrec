@@ -28,7 +28,7 @@ public class MySimilarityDivergence implements
 
 	@Override
 	public double evaluate(DoublePoint first, DoublePoint second) {
-		return -this.myEuclideanDistance.compute(first.getPoint(),
+		return this.myEuclideanDistance.compute(first.getPoint(),
 				second.getPoint());
 	}
 

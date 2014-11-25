@@ -66,6 +66,11 @@
 			<artifactId>cprefminermulti</artifactId>
 			<version>1.0.4</version>
 		</dependency>
+		<dependency>
+			<groupId>org.battelle</groupId>
+			<artifactId>clodhopper-core</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

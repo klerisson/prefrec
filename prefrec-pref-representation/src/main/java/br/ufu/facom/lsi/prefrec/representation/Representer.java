@@ -51,7 +51,7 @@ public class Representer {
 			uisList.loadModelUsers(idUserFold, idItemFold);
 
 			pms = new PrefMatrixScorer();
-			pms.fill(uisList);
+			pms.fill2(uisList);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -58,7 +58,7 @@ public class Stratificator {
 		// Initialize ratings matrix
 		for (int i = 0; i < this.users.length; i++) {
 			for (int j = 0; j < this.itens.length; j++) {
-				this.ratings[i][j] = 0;
+				this.ratings[i][j] = -1;
 			}
 		}
 

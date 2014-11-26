@@ -84,7 +84,7 @@ public class Stratificator {
 			double sum = 0.0;
 			double qtItem = 0.0;
 			for (int j = 0; j < this.users.length; j++) {
-				if (!this.ratings[j][i].equals(0)) {
+				if (!this.ratings[j][i].equals(-1)) {
 					sum += this.ratings[j][i];
 					qtItem++;
 				}
@@ -210,7 +210,7 @@ public class Stratificator {
 			double sum = 0.0;
 			double qtUsers = 0.0;
 			for (int j = 0; j < this.itens.length; j++) {
-				if (!this.stratifiedMatrix.getRatings()[i][j].equals(0)) {
+				if (!this.stratifiedMatrix.getRatings()[i][j].equals(-1)) {
 					sum += this.stratifiedMatrix.getRatings()[i][j];
 					qtUsers++;
 				}

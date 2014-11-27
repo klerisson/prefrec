@@ -7,7 +7,10 @@ package br.ufu.facom.lsi.prefrec.clusterer.apache;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.exception.ConvergenceException;
 import org.apache.commons.math3.exception.MathIllegalArgumentException;
@@ -51,9 +54,10 @@ public class KMeansPlusPlusClusterer<T extends Clusterable> extends Clusterer<T>
         ERROR
 
     }
+    
 
-    /** The number of clusters. */
-    private final int k;
+	/** The number of clusters. */
+    protected final int k;
 
     /** The maximum number of iterations. */
     private final int maxIterations;
@@ -278,8 +282,10 @@ public class KMeansPlusPlusClusterer<T extends Clusterable> extends Clusterer<T>
      * @param points the points to choose the initial centers from
      * @return the initial centers
      */
-    private List<CentroidCluster<T>> chooseInitialCenters(final Collection<T> points) {
+    protected List<CentroidCluster<T>> chooseInitialCenters(final Collection<T> points) {
 
+    	// FIXME Incluir o primeiro usuário no cluster de modo aleatório
+    	
         // Convert to list for indexed access. Make it unmodifiable, since removal of items
         // would screw up the logic of this method.
         final List<T> pointList = Collections.unmodifiableList(new ArrayList<T> (points));
@@ -542,26 +548,26 @@ public class KMeansPlusPlusClusterer<T extends Clusterable> extends Clusterer<T>
      * @param dimension the point dimension
      * @return the computed centroid for the set of points
      */
-    private Clusterable centroidOf(final Collection<T> points, final int dimension) {
-        final double[] centroid = new double[dimension];
+    protected Clusterable centroidOf(final Collection<T> points, final int dimension) {
+    	final double[] centroid = new double[dimension];
         int nonZeroCounter[] = new int[dimension];
         for (final T p : points) {
             final double[] point = p.getPoint();
             for (int i = 0; i < centroid.length; i++) {
-                if(point[i] != 0){
+                if(point[i] != -1) {
                 	centroid[i] += point[i];
                 	nonZeroCounter[i]++;
                 }
             }
         }
+        
         for (int i = 0; i < centroid.length; i++) {
         	if(nonZeroCounter[i] != 0){
         		centroid[i] /= nonZeroCounter[i];
         	} else {
-        		centroid[i] = 0;
+        		centroid[i] = -1;
         	}
         }
         return new DoublePoint(centroid);
     }
-
 }

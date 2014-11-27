@@ -16,7 +16,7 @@ public class CosineDistance implements DistanceMeasure {
 		double qtderates = 0;
 		for (int i = 0; i < p1.length; i++) {
 			// if p1[i]==0 or p2[i]==0 it doesn't use
-			if (p1[i] != 0 && p2[i] != 0) {
+			if (p1[i] != -1 && p2[i] != -1) {
 				sum += (p1[i] * p2[i]);
 				sumP1 += FastMath.pow(p1[i], 2);
 				sumP2 += FastMath.pow(p2[i], 2);
@@ -24,7 +24,7 @@ public class CosineDistance implements DistanceMeasure {
 			}
 		}
 
-		return ((sum / (FastMath.sqrt(sumP1) * FastMath.sqrt(sumP2)))/qtderates);
+		return qtderates == 0 ? Double.MAX_VALUE : ((sum / (FastMath.sqrt(sumP1) * FastMath.sqrt(sumP2)))/qtderates);
 	}
 
 }

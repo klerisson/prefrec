@@ -7,13 +7,9 @@
 	<packaging>pom</packaging>
 	<name>prefrec-all</name>
 	<modules>
-		<module>prefrec-pref-representation</module>
-		<module>prefrec-pref-clusterer</module>
-		<module>prefrec-agregation</module>
-		<module>prefrec-stratification</module>
-		<module>prefrec-pref-mining</module>
-		<module>prefrec-execution</module>
-		<module>prefrec-recommender</module>
+		<module>prefrec-model</module>
+		<module>prefrec-dao</module>
+		<module>prefrec-representation</module>
 	</modules>
 	<dependencies>
 		<dependency>

@@ -136,7 +136,7 @@ public class KMeansClusterer<T extends Clusterable> extends KMeansPlusPlusCluste
     
 
     private Double getMostFrequent(Map<Double,Integer> histogram){
-    	Double keyOfMostFrequent = null;
+    	Double keyOfMostFrequent = -1.0;
     	Integer freqOfMostFrequent = 0;  	
     	
     	for(Map.Entry<Double, Integer> entry : histogram.entrySet()) {

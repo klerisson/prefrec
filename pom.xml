@@ -13,6 +13,9 @@
 		<module>prefrec-cluster</module>
 		<module>prefrec-execution</module>
 		<module>prefrec-stratification</module>
+		<module>prefrec-agregation</module>
+		<module>prefrec-miner</module>
+		<module>prefrec-recommender</module>
 	</modules>
 	<dependencies>
 		<dependency>

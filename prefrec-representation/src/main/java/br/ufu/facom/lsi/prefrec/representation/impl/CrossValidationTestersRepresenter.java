@@ -86,7 +86,7 @@ public class CrossValidationTestersRepresenter implements Representer {
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
 				+ " where folditemid = " + idItemFold + " and " + " userid = "
-				+ userId + " and rate != -1";
+				+ userId + " and rate <> -1";
 
 		Map<Integer, Double> result = new HashMap<>();
 		try (Connection conn = GetConnection.getConnection();

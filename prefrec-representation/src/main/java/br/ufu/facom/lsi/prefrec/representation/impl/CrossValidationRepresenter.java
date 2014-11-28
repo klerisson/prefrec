@@ -36,7 +36,7 @@ public class CrossValidationRepresenter implements Representer {
 		String selectSQL = "select distinct(userid) from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where folduserid != " + foldOut;
+				+ " where folduserid <> " + foldOut;
 
 		try (Connection conn = GetConnection.getConnection();
 				Statement statement = conn.createStatement();
@@ -56,7 +56,7 @@ public class CrossValidationRepresenter implements Representer {
 			String selectSQL2 = "select itemid, rate from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-					+ " where folduserid != " + foldOut + " and userid = "
+					+ " where folduserid <> " + foldOut + " and userid = "
 					+ userId;
 
 			try (Connection conn = GetConnection.getConnection();

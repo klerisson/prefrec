@@ -18,9 +18,30 @@ public class UtilityMatrix implements Serializable {
 		super();
 		this.users = new ArrayList<>();
 	}
-	
+
 	public boolean addUser(User user) {
 		return this.users.add(user);
+	}
+
+	/**
+	 * @return the users
+	 */
+	public List<User> getUsers() {
+		return users;
+	}
+	
+	/**
+	 * 
+	 * @param user
+	 * @return user item list
+	 */
+	public List<Item> getUserItemList(User user) {
+		int idx = this.users.indexOf(user);
+		if(idx != -1) {
+			return this.users.get(idx).getItems();
+		} else {
+			return null;
+		}
 	}
 	
 }

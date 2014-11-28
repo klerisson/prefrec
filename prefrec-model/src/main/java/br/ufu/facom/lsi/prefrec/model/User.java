@@ -38,4 +38,12 @@ public class User implements Serializable{
 		return items;
 	}
 	
+	public Double[] getItemsRateDoubleArray(){
+		Double[] result = new Double[this.items.size()];
+		for(int i = 0; i < this.items.size(); i++) {
+			result[i] = this.items.get(i).getRate();
+		}
+		return result;
+	}
+	
 }

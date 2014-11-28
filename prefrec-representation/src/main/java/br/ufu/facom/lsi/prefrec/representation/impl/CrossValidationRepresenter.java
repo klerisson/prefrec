@@ -1,4 +1,4 @@
-package br.ufu.facom.lsi.prefrec.representation;
+package br.ufu.facom.lsi.prefrec.representation.impl;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,6 +9,7 @@ import java.util.List;
 import br.ufu.facom.lsi.prefrec.model.Item;
 import br.ufu.facom.lsi.prefrec.model.User;
 import br.ufu.facom.lsi.prefrec.model.UtilityMatrix;
+import br.ufu.facom.lsi.prefrec.representation.Representer;
 import br.ufu.facom.lsi.prefrec.util.AppPropertiesEnum;
 import br.ufu.facom.lsi.prefrec.util.GetConnection;
 import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
@@ -72,16 +73,5 @@ public class CrossValidationRepresenter implements Representer {
 			um.addUser(new User(userId, itemList));
 		}
 		return um;
-	}
-
-	public static void main(String... args) {
-
-		Representer r = new CrossValidationRepresenter();
-		try {
-			r.createUtilityMatrix(0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 }

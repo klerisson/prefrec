@@ -42,7 +42,7 @@ public class Miner {
 			for (Double[][] concensualMatrix : concensualMatrixList) {
 
 				Validation validation = toValidation(concensualMatrix, features, itemList);
-				// constr�i o modelo (tabelas de probabilidade)
+				// constroi o modelo (tabelas de probabilidade)
 				validation.buildModel();
 				this.validationMap.put(concensualMatrix, validation);
 			}
@@ -87,20 +87,20 @@ public class Miner {
 	/**
 	 * 
 	 * Converte um mapa com id do item e atributos associados a uma matriz item
-	 * x item em um objeto Validation compat�vel com o CPrefMiner Multi.
+	 * x item em um objeto Validation compativel com o CPrefMiner Multi.
 	 * 
 	 * @param matrix
-	 *            matriz item x item de um usu�rio/cluster
+	 *            matriz item x item de um usuario/cluster
 	 * @param features
-	 *            mapa com os atributos/caracter�sticas de um filme
-	 * @return Um objeto Validation do CPrefMiner Multi, de tal modo que �
-	 *         poss�vel executar o minerador sobre as avalia��es da matriz
-	 *         considerando as caracter�sticas dos itens.
+	 *            mapa com os atributos/caracteristicas de um filme
+	 * @return Um objeto Validation do CPrefMiner Multi, de tal modo que sao
+	 *         possivel executar o minerador sobre as avaliacoes da matriz
+	 *         considerando as caracteristicas dos itens.
 	 * @throws Exception
 	 *             -
 	 */
 	//FIXME Precisamos de um mapa da forma Map<Integer,Integer> onde a 
-	// chave é o índice da matriz e o valor é o ID do item (filme)
+	// chave sao o indice da matriz e o valor sao o ID do item (filme)
 	public Validation toValidation(Double[][] matrix,
 			Map<Key, FullTuple> features, Map<Integer,Integer> itemList) throws Exception {
 		ArrayList<Bituple> bituples = new ArrayList<>();
@@ -139,7 +139,7 @@ public class Miner {
 		ArrayList<Bituple> bituples = new ArrayList<>();
 		for (Map.Entry<Integer, Double> i : ids.entrySet()) {
 			for (Map.Entry<Integer, Double> j : ids.entrySet()) {
-				if (i != j && i.getValue() > j.getValue()) { // n�o pode ser o
+				if (i != j && i.getValue() > j.getValue()) { // nao pode ser o
 																// mesmo item e
 																// o item da
 																// esquerda deve

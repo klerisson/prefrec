@@ -4,9 +4,12 @@
 package br.ufu.facom.lsi.prefrec.cluster.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
@@ -27,6 +30,7 @@ import br.ufu.facom.lsi.prefrec.model.UtilityMatrix;
 public class KMeansImpl extends Clusterer{
 
 	private KMeansClusterer<DoublePoint> kMeans;
+	private Map<Long, Double[]> clusterCenters;
 
 	private KMeansImpl(KMeansBuilder builder) {
 		this.kMeans = new KMeansClusterer<DoublePoint>(builder.clustersNumber,
@@ -44,10 +48,33 @@ public class KMeansImpl extends Clusterer{
 		}
 
 		List<CentroidCluster<DoublePoint>> clustersKmeans = kMeans.cluster(doublePointList);
+		fetchClustersCenter(clustersKmeans);
 		return clusterVectorToClusterUser(clustersKmeans, doublePointMap);
-		
+	}
+
+	/**
+	 * @param clustersKmeans
+	 */
+	private void fetchClustersCenter(
+			List<CentroidCluster<DoublePoint>> clustersKmeans) {
+		this.clusterCenters = new HashMap<>();
+		Iterator<CentroidCluster<DoublePoint>> it = clustersKmeans.iterator();
+		int clusterIdx = 0;
+		while (it.hasNext()) {
+			final Long clusterIdxLong = new Long(clusterIdx);
+			Double[] points = ArrayUtils.toObject(it.next().getCenter().getPoint());
+			this.clusterCenters.put(clusterIdxLong, points);
+			clusterIdx++;
+		}
 	}
 	
+	/**
+	 * @return the clusterCenters
+	 */
+	public Map<Long, Double[]> getClusterCenters() {
+		return clusterCenters;
+	}
+
 	public static class KMeansBuilder implements Builder<Clusterer> {
 
 		private int clustersNumber;

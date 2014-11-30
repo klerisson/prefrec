@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
 
 import prefdb.model.PrefDatabase;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
@@ -14,7 +15,7 @@ import control.Validation;
 public class XPrefRec {
 
 	private Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap;
-	private MyEuclideanDistance myEuclideanDistance; 
+	private DistanceMeasure distanceMeasure; 
 	
 	/**
 	 * @param concensualMatrixMap
@@ -23,7 +24,7 @@ public class XPrefRec {
 			Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap) {
 		super();
 		this.concensualMatrixMap = concensualMatrixMap;
-		this.myEuclideanDistance = new MyEuclideanDistance();
+		this.distanceMeasure = new MyEuclideanDistance();
 	}
 
 	public Float[] run(Long userId, Double[][] itemItem, Map<Integer, Double> itemIdToRate,
@@ -52,7 +53,7 @@ public class XPrefRec {
 		for(Double[][] concensualTemp : this.concensualMatrixMap.keySet()){
 			
 			double[] concensualVector = matrixToVector(concensualTemp);
-			double currentDistance = this.myEuclideanDistance.compute(itemItemVector, concensualVector);
+			double currentDistance = this.distanceMeasure.compute(itemItemVector, concensualVector);
 			if(currentDistance <= distance){
 				result = concensualTemp;
 				distance = currentDistance;
@@ -65,7 +66,6 @@ public class XPrefRec {
 	private double[] matrixToVector(Double[][] matrix){
 		
 		List<Double> result = new ArrayList<>();
-		
 		for(int i = 0; i < matrix.length; i++){
 			for(int j = i+1; j < matrix.length; j++){//teste era j=i+1
 				result.add(matrix[i][j]);

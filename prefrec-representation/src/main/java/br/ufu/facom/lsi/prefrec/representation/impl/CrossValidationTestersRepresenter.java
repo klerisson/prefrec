@@ -47,9 +47,9 @@ public class CrossValidationTestersRepresenter implements Representer {
 			String selectSQL2 = "select itemid, rate, folditemid from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-					+ " where folduserid == " + userFold + " and userid = "
+					+ " where folduserid = " + userFold + " and userid = "
 					+ userId;
-
+		
 			try (Connection conn = GetConnection.getConnection();
 					Statement st = conn.createStatement();
 					ResultSet rs = st.executeQuery(selectSQL2);) {

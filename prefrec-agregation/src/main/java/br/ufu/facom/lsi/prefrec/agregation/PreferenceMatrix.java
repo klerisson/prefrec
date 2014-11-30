@@ -28,13 +28,13 @@ public class PreferenceMatrix {
 			Double[][] rm = new Double[matrixSize][matrixSize];
 
 			int rowId = 0;
-			for (Long i : uniqueItens) {
+			for (int i=0;i<userItemList.size();i++) {
 				int columnId = 0;
-				for (Long j : uniqueItens) {
+				for (int j=0;j<userItemList.size();j++) {
 
 					Double[] ratings = new Double[] {
-							userItemList.get(i.intValue()).getRate(),
-							userItemList.get(j.intValue()).getRate() };
+							userItemList.get(i).getRate(),
+							userItemList.get(j).getRate() };
 
 					if (i == j) {
 						rm[rowId][columnId] = 0.5;

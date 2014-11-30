@@ -17,7 +17,8 @@ public class Agregator {
 	private Map<Long, Double[][]> preferenceMatrixMap;
 	private Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap = new LinkedHashMap<>();
 
-	public Agregator(Map<Long, List<User>> cluster, UtilityMatrix utilityMatrix) throws Exception {
+	public Agregator(Map<Long, List<User>> cluster, UtilityMatrix utilityMatrix)
+			throws Exception {
 		this.cluster = cluster;
 		this.preferenceMatrixMap = PreferenceMatrix.build(utilityMatrix);
 	}
@@ -25,8 +26,8 @@ public class Agregator {
 	public void execute() {
 
 		try {
-			int length = cluster.values().iterator().next()
-					.get(0).getItems().size();
+			int length = cluster.values().iterator().next().get(0).getItems()
+					.size();
 
 			for (Long clusterId : this.cluster.keySet()) {
 
@@ -34,39 +35,45 @@ public class Agregator {
 				Double[][] counter = initMatrix(length);
 				Double qtdeusers = 0.0;
 				List<Map<Long, Double[][]>> userToPreferenceMatrix = new ArrayList<>();
-				
+
 				// Reading Matrix
 				for (User u : cluster.get(clusterId)) {
 					qtdeusers++;
-					Double[][] preferences = this.preferenceMatrixMap.get(u.getId());
+					Double[][] preferences = this.preferenceMatrixMap.get(u
+							.getId());
 					for (int k = 0; k < preferences.length; k++) {
 						for (int h = 0; h < preferences[k].length; h++) {
-							if (preferences[k][h] != -1.0 && preferences[k][h] != null) {
+							if (preferences[k][h] != -1.0
+									&& preferences[k][h] != null) {
 								concensualMatrix[k][h] += preferences[k][h];
 								counter[k][h]++;
 							}
 						}
 					}
-					
-					for (int k = 0; k < concensualMatrix.length; k++) {
-						for (int h = 0; h < concensualMatrix[k].length; h++) {
-							// more than half users rate the item
-							if ((counter[k][h] <= ((qtdeusers) / 2)) || k == h) {
-								concensualMatrix[k][h] = 0.5;
-							} else {
-								BigDecimal consensoR = new BigDecimal(
-										(concensualMatrix[k][h] / counter[k][h]))
-										.setScale(3, RoundingMode.HALF_EVEN);
-								concensualMatrix[k][h] = consensoR.doubleValue();
+				}
 
-							}
+				for (int k = 0; k < concensualMatrix.length; k++) {
+					for (int h = 0; h < concensualMatrix[k].length; h++) {
+						// more than half users rate the item
+						if ((counter[k][h] <= ((qtdeusers) / 2)) || k == h) {
+							concensualMatrix[k][h] = 0.5;
+						} else {
+							BigDecimal consensoR = new BigDecimal(
+									(concensualMatrix[k][h] / counter[k][h]))
+									.setScale(3, RoundingMode.HALF_EVEN);
+							concensualMatrix[k][h] = consensoR.doubleValue();
+
 						}
 					}
-					HashMap<Long, Double[][]> mapUserToPrefMatrix = new HashMap<>();
-					mapUserToPrefMatrix.put(u.getId(), this.preferenceMatrixMap.get(u.getId()));
-					userToPreferenceMatrix.add(mapUserToPrefMatrix);
 				}
-				concensualMatrixMap.put(concensualMatrix, 
+				HashMap<Long, Double[][]> mapUserToPrefMatrix = new HashMap<>();
+				for (User u : cluster.get(clusterId)) {
+					mapUserToPrefMatrix.put(u.getId(),
+							this.preferenceMatrixMap.get(u.getId()));
+
+				}
+				userToPreferenceMatrix.add(mapUserToPrefMatrix);
+				concensualMatrixMap.put(concensualMatrix,
 						userToPreferenceMatrix);
 			}
 		} catch (Exception e) {
@@ -84,13 +91,6 @@ public class Agregator {
 		}
 		return result;
 	}
-
-//	/**
-//	 * @return the clusterToUserMatrixScorer
-//	 */
-//	public Map<Long, List<User>> getClusterToUserMatrixScorer() {
-//		return cluster;
-//	}
 
 	/**
 	 * @return the concensualMatrixMap

@@ -68,9 +68,7 @@ public class KMeansImpl extends Clusterer{
 		}
 	}
 	
-	/**
-	 * @return the clusterCenters
-	 */
+	@Override
 	public Map<Long, Double[]> getClusterCenters() {
 		return clusterCenters;
 	}

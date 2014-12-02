@@ -58,6 +58,15 @@ public class UtilityMatrix implements Serializable {
 			return null;
 		}
 	}
+	
+	public User getUserItemList(Long userId) {
+		for(User u : this.users){
+			if(u.getId() == userId){
+				return u; 
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * @return the uniqueItemIds

@@ -17,7 +17,12 @@ public abstract class Clusterer {
 
 	public abstract Map<Long, List<User>> cluster(
 			UtilityMatrix utilityMatrix) throws Exception;
-
+	
+	/**
+	 * @return the clusterCenters
+	 */
+	public abstract Map<Long, Double[]> getClusterCenters();
+	
 	protected Map<DoublePoint, User> toDoublePointMap(
 			UtilityMatrix utilityMatrix) {
 
@@ -55,5 +60,5 @@ public abstract class Clusterer {
 		}
 		return result;
 	}
-
+	
 }

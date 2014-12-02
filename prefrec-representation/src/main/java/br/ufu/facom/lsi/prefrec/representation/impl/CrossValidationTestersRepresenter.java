@@ -27,7 +27,7 @@ public class CrossValidationTestersRepresenter implements Representer {
 		String selectSQL = "select distinct(userid) from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where folduserid = " + userFold;
+				+ " where folduserid = " + userFold + " order by userid;";
 
 		try (Connection conn = GetConnection.getConnection();
 				Statement statement = conn.createStatement();
@@ -48,7 +48,7 @@ public class CrossValidationTestersRepresenter implements Representer {
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
 					+ " where folduserid = " + userFold + " and userid = "
-					+ userId;
+					+ userId + " order by itemid";
 		
 			try (Connection conn = GetConnection.getConnection();
 					Statement st = conn.createStatement();
@@ -86,7 +86,7 @@ public class CrossValidationTestersRepresenter implements Representer {
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
 				+ " where folditemid = " + idItemFold + " and " + " userid = "
-				+ userId + " and rate <> -1";
+				+ userId + " and rate <> -1 order by itemid;";
 
 		Map<Integer, Double> result = new HashMap<>();
 		try (Connection conn = GetConnection.getConnection();

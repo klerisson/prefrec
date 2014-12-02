@@ -93,7 +93,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 		String selectSQL = "select userid, itemid, rate from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where folduserid != " + fold;
+				+ " where folduserid != " + fold+ " order by userid,itemid";
 
 		try (Connection conn = GetConnection.getConnection();
 				Statement statement = conn.createStatement();
@@ -293,7 +293,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 		String selectSQL = "select userid, itemid, rate, folditemid from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where folduserid = " + idUserFold;// + " and folditemid != "
+				+ " where folduserid = " + idUserFold+ " order by userid, itemid";// + " and folditemid != "
 														// + idItemFold;
 
 		try (Connection conn = GetConnection.getConnection();
@@ -375,7 +375,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
 				+ " where folditemid = " + idItemFold + " and " + " userid = "
-				+ userId + " and rate != 0";
+				+ userId + " and rate != -1"+ " order by itemid";
 
 		Map<Integer, Double> result = new HashMap<>();
 		try (Connection conn = GetConnection.getConnection();

@@ -5,19 +5,20 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import br.ufu.facom.lsi.prefrec.agregation.Agregator;
 import br.ufu.facom.lsi.prefrec.agregation.PreferenceMatrix;
 import br.ufu.facom.lsi.prefrec.cluster.ClusterEnum;
+import br.ufu.facom.lsi.prefrec.cluster.Clusterer;
 import br.ufu.facom.lsi.prefrec.cluster.ClustererFactory;
 import br.ufu.facom.lsi.prefrec.cluster.apache.KMeansClusterer.CentroidStrategy;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
-import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansImpl;
 import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansImpl.KMeansBuilder;
+import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansPlusPlusImpl.KMeansPlusPlusBuilder;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.User;
 import br.ufu.facom.lsi.prefrec.model.UtilityMatrix;
@@ -36,22 +37,24 @@ public class Execute {
 			UtilityMatrix utilityMatrix = null;
 			Representer representer = RepresenterFacotry
 					.getRepresenter(RepresenterEnum.CROSS_VALIDATION);
-			
-			try {
-				utilityMatrix = representer.createUtilityMatrix(i);
-			} catch (Exception e) {
-				throw e;
-			}
+			utilityMatrix = representer.createUtilityMatrix(i);
 
-			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
-					.getClusterBuilder(ClusterEnum.KMEANS);
-			KMeansImpl kmeans = clustererBuilder.clustersNumber(4)
-					.measure(new MyEuclideanDistance())
-					.centroidStrategy(CentroidStrategy.AVERAGE).build();
-			Map<Long, List<User>> cluster = kmeans.cluster(utilityMatrix);
+			 KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
+			 .getClusterBuilder(ClusterEnum.KMEANS);
+			 Clusterer clusterer = clustererBuilder.clustersNumber(2)
+			.measure(new MyEuclideanDistance())
+			 .centroidStrategy(CentroidStrategy.MAJORITY).build();
+
+			//KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder) ClustererFactory
+				//	.getClusterBuilder(ClusterEnum.KMEANS_PLUS_PLUS);
+			//Clusterer clusterer = clustererBuilder.clustersNumber(4)
+				//	.measure(new MyEuclideanDistance()).build();
+
+			Map<Long, List<User>> cluster = clusterer.cluster(utilityMatrix);
 			// System.out.println(cluster.size());
 			for (Long id : cluster.keySet()) {
 				System.out.println(cluster.get(id).size());
+
 			}
 			System.out.println();
 			System.out.println(i);
@@ -63,7 +66,7 @@ public class Execute {
 			Miner miner = new Miner();
 			try {
 
-				Map<Integer, Integer> itemMap = new HashMap<>();
+				TreeMap<Integer, Integer> itemMap = new TreeMap<>();
 				int cont = 0;
 				for (Long id : utilityMatrix.getUniqueItemIds()) {
 					// create map index to itemid
@@ -77,28 +80,42 @@ public class Execute {
 			} catch (Exception e1) {
 				throw e1;
 			}
-			
-			XPrefRec xprefrec = new XPrefRec(agregator.getConcensualMatrixMap());
+
+			XPrefRec xprefrec = new XPrefRec(
+					agregator.getConcensualMatrixMap(), miner);
 			for (int j = 0; j < partitions; j++) {
-				
+
 				CrossValidationTestersRepresenter testerRepresenter = (CrossValidationTestersRepresenter) RepresenterFacotry
-						.getRepresenter(RepresenterEnum.CROSS_VALIDATION_TESTER); 
-				
-				UtilityMatrix testerUtilityMatrix = testerRepresenter.createUtilityMatrix(i, j);
-				Map<Long, Double[][]> testersPrefMatrixMap = PreferenceMatrix.build(testerUtilityMatrix);
-				
-				for (Entry<Long, Double[][]> entry : testersPrefMatrixMap.entrySet()) {
+						.getRepresenter(RepresenterEnum.CROSS_VALIDATION_TESTER);
+
+				UtilityMatrix testerUtilityMatrix = testerRepresenter
+						.createUtilityMatrix(i, j);
+				Map<Long, Double[][]> testersPrefMatrixMap = PreferenceMatrix
+						.build(testerUtilityMatrix);
+
+				for (Entry<Long, Double[][]> entry : testersPrefMatrixMap
+						.entrySet()) {
 
 					Map<Integer, Double> itemIdToRate;
 					try {
 
-						itemIdToRate = CrossValidationTestersRepresenter.fetchValidationFold(entry.getKey().intValue(), j);
+						itemIdToRate = CrossValidationTestersRepresenter
+								.fetchValidationFold(entry.getKey().intValue(),
+										j);
 						if (itemIdToRate != null && itemIdToRate.size() > 1) {
-							Float[] precisionRecall = xprefrec.run(entry.getKey(),
-									entry.getValue(),
-									itemIdToRate, miner);
-							if(precisionRecall != null){
-								writeOutput(entry.getKey(), i, j, precisionRecall);
+							Float[] precisionRecall = xprefrec.run(
+									entry.getKey(), entry.getValue(),
+									itemIdToRate, null, testerUtilityMatrix);
+
+							// Float[] precisionRecall =
+							 //xprefrec.run(entry.getKey()
+							 //, entry.getValue(),
+							 //itemIdToRate, clusterer.getClusterCenters(),
+							 //testerUtilityMatrix);
+
+							if (precisionRecall != null) {
+								writeOutput(entry.getKey(), i, j,
+										precisionRecall);
 							}
 						}
 					} catch (Exception e) {
@@ -109,15 +126,15 @@ public class Execute {
 		}
 	}
 
-	private static void writeOutput(Long userId, int userFoldId, int itemFoldId,
-			Float[] precisionRecall) {
+	private static void writeOutput(Long userId, int userFoldId,
+			int itemFoldId, Float[] precisionRecall) {
 
 		try {
 
 			StringBuilder msg = new StringBuilder();
-			msg.append(userId).append(",").append(userFoldId).append(",")
-					.append(itemFoldId).append(",").append(precisionRecall[0])
-					.append(",").append(precisionRecall[1])
+			msg.append(userId).append(";").append(userFoldId).append(";")
+					.append(itemFoldId).append(";").append(precisionRecall[0])
+					.append(";").append(precisionRecall[1])
 					.append(System.lineSeparator());
 
 			if (!Files.exists(Paths.get("./output.cvs"))) {

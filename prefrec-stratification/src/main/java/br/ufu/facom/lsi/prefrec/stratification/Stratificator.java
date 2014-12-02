@@ -179,11 +179,11 @@ public class Stratificator {
 	}
 
 	private void classifyItemMean(double d) {
-		if (d > 4) {
+		if (d >= 4) {
 			this.rangeItemCounter[3]++;
-		} else if (d > 3) {
+		} else if (d >= 3) {
 			this.rangeItemCounter[2]++;
-		} else if (d > 2) {
+		} else if (d >= 2) {
 			this.rangeItemCounter[1]++;
 		} else {
 			this.rangeItemCounter[0]++;
@@ -294,11 +294,11 @@ public class Stratificator {
 	}
 
 	private void classifyUserMean(double mean) {
-		if (mean > 4) {
+		if (mean >= 4) {
 			this.rangeUserCounter[3]++;
-		} else if (mean > 3) {
+		} else if (mean >= 3) {
 			this.rangeUserCounter[2]++;
-		} else if (mean > 2) {
+		} else if (mean >= 2) {
 			this.rangeUserCounter[1]++;
 		} else {
 			this.rangeUserCounter[0]++;

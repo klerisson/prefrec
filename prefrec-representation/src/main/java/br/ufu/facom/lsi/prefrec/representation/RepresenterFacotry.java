@@ -12,6 +12,8 @@ public final class RepresenterFacotry {
 			return new CrossValidationRepresenter();
 		case CROSS_VALIDATION_TESTER:
 			return new CrossValidationTestersRepresenter();
+		case LEAVE_ONE_OUT:
+			return null;
 		default:
 			return null;
 		}

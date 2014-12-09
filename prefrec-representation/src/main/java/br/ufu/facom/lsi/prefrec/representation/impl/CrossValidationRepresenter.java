@@ -19,7 +19,7 @@ import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
  *
  */
 public class CrossValidationRepresenter implements Representer {
-		
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -48,11 +48,11 @@ public class CrossValidationRepresenter implements Representer {
 		} catch (Exception e) {
 			throw e;
 		}
-		
-		for(Long userId : usersId){
+
+		for (Long userId : usersId) {
 
 			List<Item> itemList = new ArrayList<>();
-			
+
 			String selectSQL2 = "select itemid, rate from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
@@ -70,7 +70,25 @@ public class CrossValidationRepresenter implements Representer {
 			} catch (Exception e) {
 				throw e;
 			}
-			um.addUser(new User(userId, itemList));
+
+			// retrieve friends list
+			List<User> friends = new ArrayList<>();
+			String friendshipSql = "select friendid from " + PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE) + " where userid = "
+					+ userId + " order by friendid;";
+			
+			try (Connection conn = GetConnection.getConnection();
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery(friendshipSql);) {
+
+				while (rs.next()) {
+					friends.add(new User(rs.getLong("friendid")));
+				}
+			} catch (Exception e) {
+				throw e;
+			}
+			
+			um.addUser(new User(userId, itemList, friends));
 		}
 		return um;
 	}

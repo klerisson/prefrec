@@ -68,7 +68,25 @@ public class CrossValidationTestersRepresenter implements Representer {
 			} catch (Exception e) {
 				throw e;
 			}
-			um.addUser(new User(userId, itemList));
+			
+			// retrieve friends list
+			List<User> friends = new ArrayList<>();
+			String friendshipSql = "select friendid from " + PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE) + " where userid = "
+					+ userId + " order by friendid;";
+			
+			try (Connection conn = GetConnection.getConnection();
+					Statement st = conn.createStatement();
+					ResultSet rs = st.executeQuery(friendshipSql);) {
+
+				while (rs.next()) {
+					friends.add(new User(rs.getLong("friendid")));
+				}
+			} catch (Exception e) {
+				throw e;
+			}
+			
+			um.addUser(new User(userId, itemList, friends));
 		}
 		return um;
 	}

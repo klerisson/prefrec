@@ -18,7 +18,6 @@ import br.ufu.facom.lsi.prefrec.cluster.ClustererFactory;
 import br.ufu.facom.lsi.prefrec.cluster.apache.KMeansClusterer.CentroidStrategy;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
 import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansImpl.KMeansBuilder;
-import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansPlusPlusImpl.KMeansPlusPlusBuilder;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.User;
 import br.ufu.facom.lsi.prefrec.model.UtilityMatrix;
@@ -27,8 +26,10 @@ import br.ufu.facom.lsi.prefrec.representation.RepresenterEnum;
 import br.ufu.facom.lsi.prefrec.representation.RepresenterFacotry;
 import br.ufu.facom.lsi.prefrec.representation.impl.CrossValidationTestersRepresenter;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialAverage;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.FriendshipStrenghtTie;
 
-public class Execute {
+public class ExecuteCross {
 
 	public static void run(int partitions) throws Exception {
 
@@ -39,16 +40,17 @@ public class Execute {
 					.getRepresenter(RepresenterEnum.CROSS_VALIDATION);
 			utilityMatrix = representer.createUtilityMatrix(i);
 
-			 KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
-			 .getClusterBuilder(ClusterEnum.KMEANS);
-			 Clusterer clusterer = clustererBuilder.clustersNumber(2)
-			.measure(new MyEuclideanDistance())
-			 .centroidStrategy(CentroidStrategy.MAJORITY).build();
+			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
+					.getClusterBuilder(ClusterEnum.KMEANS);
+			Clusterer clusterer = clustererBuilder.clustersNumber(2)
+					.measure(new MyEuclideanDistance())
+					.centroidStrategy(CentroidStrategy.MAJORITY).build();
 
-			//KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder) ClustererFactory
-				//	.getClusterBuilder(ClusterEnum.KMEANS_PLUS_PLUS);
-			//Clusterer clusterer = clustererBuilder.clustersNumber(4)
-				//	.measure(new MyEuclideanDistance()).build();
+			// KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder)
+			// ClustererFactory
+			// .getClusterBuilder(ClusterEnum.KMEANS_PLUS_PLUS);
+			// Clusterer clusterer = clustererBuilder.clustersNumber(4)
+			// .measure(new MyEuclideanDistance()).build();
 
 			Map<Long, List<User>> cluster = clusterer.cluster(utilityMatrix);
 			// System.out.println(cluster.size());
@@ -81,8 +83,11 @@ public class Execute {
 				throw e1;
 			}
 
-			XPrefRec xprefrec = new XPrefRec(
-					agregator.getConcensualMatrixMap(), miner);
+			// XPrefRec xprefrec = new XPrefRec(
+			//		agregator.getConcensualMatrixMap(), miner);
+			
+			XPrefRec xprefrec = new XPrefRecSocialAverage(agregator.getConcensualMatrixMap(), miner, new FriendshipStrenghtTie());
+			
 			for (int j = 0; j < partitions; j++) {
 
 				CrossValidationTestersRepresenter testerRepresenter = (CrossValidationTestersRepresenter) RepresenterFacotry
@@ -103,19 +108,29 @@ public class Execute {
 								.fetchValidationFold(entry.getKey().intValue(),
 										j);
 						if (itemIdToRate != null && itemIdToRate.size() > 1) {
-							Float[] precisionRecall = xprefrec.run(
-									entry.getKey(), entry.getValue(),
-									itemIdToRate, null, testerUtilityMatrix);
 
-							// Float[] precisionRecall =
-							 //xprefrec.run(entry.getKey()
-							 //, entry.getValue(),
-							 //itemIdToRate, clusterer.getClusterCenters(),
-							 //testerUtilityMatrix);
+							try {
 
-							if (precisionRecall != null) {
-								writeOutput(entry.getKey(), i, j,
-										precisionRecall);
+								Float[] precisionRecall = xprefrec
+										.run(entry.getKey(), entry.getValue(),
+												itemIdToRate, null,
+												testerUtilityMatrix);
+
+								// Find consensual matrix by centroid
+								// Float[] precisionRecall =
+								// xprefrec.run(entry.getKey()
+								// , entry.getValue(),
+								// itemIdToRate, clusterer.getClusterCenters(),
+								// testerUtilityMatrix);
+
+								if (precisionRecall != null) {
+									writeOutput(entry.getKey(), i, j,
+											precisionRecall);
+								}
+
+							} catch (Exception e) {
+								writeOutput(entry.getKey(), i, j, new Float[] {
+										-1f, -1f });
 							}
 						}
 					} catch (Exception e) {
@@ -148,11 +163,4 @@ public class Execute {
 		}
 	}
 
-	public static void main(String... args) {
-		try {
-			Execute.run(5);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

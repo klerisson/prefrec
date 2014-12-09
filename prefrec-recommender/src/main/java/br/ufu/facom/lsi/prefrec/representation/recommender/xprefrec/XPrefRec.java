@@ -17,9 +17,9 @@ import control.Validation;
 
 public class XPrefRec {
 
-	private Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap;
 	private DistanceMeasure distanceMeasure;
-	private Miner miner;
+	protected Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap;
+	protected Miner miner;
 
 	/**
 	 * @param concensualMatrixMap
@@ -59,7 +59,7 @@ public class XPrefRec {
 		return null;
 	}
 
-	private Double[][] findSimilarConcensualMatrix(Double[][] itemItem) {
+	protected Double[][] findSimilarConcensualMatrix(Double[][] itemItem) {
 
 		double[] itemItemVector = matrixToVector(itemItem);
 		Double[][] result = null;
@@ -77,7 +77,7 @@ public class XPrefRec {
 		return result;
 	}
 
-	private Double[][] findSimilarConcensualMatrix(Long userId, Map<Long, Double[]> clusterCenters,
+	protected Double[][] findSimilarConcensualMatrix(Long userId, Map<Long, Double[]> clusterCenters,
 			UtilityMatrix testerUtilityMatrix) {
 
 		User user = testerUtilityMatrix.getUserItemList(userId);
@@ -98,13 +98,13 @@ public class XPrefRec {
 		return result;
 	}
 
-	private Double[][] getConcensualFromIndex(int index){
+	protected Double[][] getConcensualFromIndex(int index){
 		List<Double[][]> keys = new ArrayList<>(this.concensualMatrixMap.keySet());
 		return (Double[][]) keys.get(index);
 	}
 	
 	
-	private double[] userItemsToArray(List<Item> items) {
+	protected double[] userItemsToArray(List<Item> items) {
 		double[] userPoints = new double[items.size()];
 		for(int i = 0; i < items.size(); i++){
 			userPoints[i] = items.get(i).getRate();
@@ -112,7 +112,7 @@ public class XPrefRec {
 		return userPoints;
 	}
 
-	private double[] matrixToVector(Double[][] matrix) {
+	protected double[] matrixToVector(Double[][] matrix) {
 
 		List<Double> result = new ArrayList<>();
 		for (int i = 0; i < matrix.length; i++) {

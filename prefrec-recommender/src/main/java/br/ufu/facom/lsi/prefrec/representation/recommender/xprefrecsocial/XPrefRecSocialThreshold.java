@@ -1,7 +1,7 @@
 /**
  * 
  */
-package br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie;
+package br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.Set;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.User;
 import br.ufu.facom.lsi.prefrec.model.UtilityMatrix;
-import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialAverage;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.StrenghtTie;
 
 /**
  * @author Klerisson

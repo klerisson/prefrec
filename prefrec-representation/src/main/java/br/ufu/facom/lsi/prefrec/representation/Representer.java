@@ -12,5 +12,5 @@ import br.ufu.facom.lsi.prefrec.model.UtilityMatrix;
 public interface Representer {
 
 	UtilityMatrix createUtilityMatrix(int parameter) throws Exception;
-	UtilityMatrix createUtilityMatrix(int userFold, int itemFold) throws Exception;
+	UtilityMatrix createUtilityMatrix(int parameter1, int parameter2) throws Exception;
 }

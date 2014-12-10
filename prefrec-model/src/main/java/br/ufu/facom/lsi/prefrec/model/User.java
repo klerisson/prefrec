@@ -3,6 +3,7 @@ package br.ufu.facom.lsi.prefrec.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Klerisson
@@ -15,6 +16,7 @@ public class User implements Serializable {
 	private Long id;
 	private List<Item> items;
 	private List<User> friends;
+	private Map<User, Double> centralityMap;
 
 	/**
 	 * @param id
@@ -34,6 +36,20 @@ public class User implements Serializable {
 	public User(Long id, List<Item> items, List<User> friends) {
 		this(id, items);
 		this.friends = friends;
+	}
+
+	
+	
+	/**
+	 * @param id
+	 * @param items
+	 * @param friends
+	 * @param centralityMap
+	 */
+	public User(Long id, List<Item> items, List<User> friends,
+			Map<User, Double> centralityMap) {
+		this(id, items, friends);
+		this.centralityMap = centralityMap;
 	}
 
 	public User(Long userId) {
@@ -71,11 +87,10 @@ public class User implements Serializable {
 	}
 
 	/**
-	 * @param friends
-	 *            the friends to set
+	 * @return the centralityMap
 	 */
-	public void setFriends(List<User> friends) {
-		this.friends = friends;
+	public Map<User, Double> getCentralityMap() {
+		return centralityMap;
 	}
 
 	/* (non-Javadoc)

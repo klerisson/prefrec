@@ -84,10 +84,12 @@ public class ExecuteCross {
 			}
 
 			// XPrefRec xprefrec = new XPrefRec(
-			//		agregator.getConcensualMatrixMap(), miner);
-			
-			XPrefRec xprefrec = new XPrefRecSocialAverage(agregator.getConcensualMatrixMap(), miner, new FriendshipStrenghtTie());
-			
+			// agregator.getConcensualMatrixMap(), miner);
+
+			XPrefRec xprefrec = new XPrefRecSocialAverage(
+					agregator.getConcensualMatrixMap(), miner,
+					new FriendshipStrenghtTie());
+
 			for (int j = 0; j < partitions; j++) {
 
 				CrossValidationTestersRepresenter testerRepresenter = (CrossValidationTestersRepresenter) RepresenterFacotry
@@ -103,14 +105,11 @@ public class ExecuteCross {
 
 					Map<Integer, Double> itemIdToRate;
 					try {
-
 						itemIdToRate = CrossValidationTestersRepresenter
 								.fetchValidationFold(entry.getKey().intValue(),
 										j);
 						if (itemIdToRate != null && itemIdToRate.size() > 1) {
-
 							try {
-
 								Float[] precisionRecall = xprefrec
 										.run(entry.getKey(), entry.getValue(),
 												itemIdToRate, null,
@@ -162,5 +161,4 @@ public class ExecuteCross {
 			e.printStackTrace();
 		}
 	}
-
 }

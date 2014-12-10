@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import br.ufu.facom.lsi.prefrec.model.Item;
 import br.ufu.facom.lsi.prefrec.model.User;
@@ -71,24 +73,32 @@ public class CrossValidationRepresenter implements Representer {
 				throw e;
 			}
 
-			// retrieve friends list
+			// retrieve friends list and their centrality
 			List<User> friends = new ArrayList<>();
-			String friendshipSql = "select friendid from " + PropertiesUtil
-							.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE) + " where userid = "
-					+ userId + " order by friendid;";
-			
+			Map<User, Double> centrality = new HashMap<>();
+			String friendshipSql = "select u.friendid,f.centrality from "
+					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
+					+ " u, "
+					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.CENTRALITY)
+					+ " f where f.userid = u.friendid and u.userid= " + userId
+					+ " order by u.friendid;";
+
 			try (Connection conn = GetConnection.getConnection();
 					Statement st = conn.createStatement();
 					ResultSet rs = st.executeQuery(friendshipSql);) {
 
 				while (rs.next()) {
-					friends.add(new User(rs.getLong("friendid")));
+					User utemp = new User(rs.getLong("friendid"));
+					friends.add(utemp);
+					centrality.put(utemp, rs.getDouble("centrality"));
 				}
 			} catch (Exception e) {
 				throw e;
 			}
 			
-			um.addUser(new User(userId, itemList, friends));
+			um.addUser(new User(userId, itemList, friends, centrality));
 		}
 		return um;
 	}

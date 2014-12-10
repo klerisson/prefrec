@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package br.ufu.facom.lsi.prefrec.representation.impl;
 
 import java.sql.Connection;
@@ -16,11 +19,21 @@ import br.ufu.facom.lsi.prefrec.util.AppPropertiesEnum;
 import br.ufu.facom.lsi.prefrec.util.GetConnection;
 import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
 
-public class CrossValidationTestersRepresenter implements Representer {
+/**
+ * @author Klerisson
+ *
+ */
+public class LeaveOneOutRepresenter implements Representer {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufu.facom.lsi.prefrec.representation.Representer#createUtilityMatrix
+	 * (int)
+	 */
 	@Override
-	public UtilityMatrix createUtilityMatrix(int userFold, int itemFold)
-			throws Exception {
+	public UtilityMatrix createUtilityMatrix(int parameter) throws Exception {
 
 		UtilityMatrix um = new UtilityMatrix();
 		List<Long> usersId = new ArrayList<Long>();
@@ -28,7 +41,7 @@ public class CrossValidationTestersRepresenter implements Representer {
 		String selectSQL = "select distinct(userid) from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where folduserid = " + userFold + " order by userid;";
+				+ " where userid <> " + parameter + " order by userid;";
 
 		try (Connection conn = GetConnection.getConnection();
 				Statement statement = conn.createStatement();
@@ -44,27 +57,19 @@ public class CrossValidationTestersRepresenter implements Representer {
 		for (Long userId : usersId) {
 
 			List<Item> itemList = new ArrayList<>();
-
-			String selectSQL2 = "select itemid, rate, folditemid from "
+			String selectSQL2 = "select itemid, rate from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-					+ " where folduserid = " + userFold + " and userid = "
-					+ userId + " order by itemid";
+					+ " where and userid = "
+					+ userId + " order by itemid;";
 
 			try (Connection conn = GetConnection.getConnection();
 					Statement st = conn.createStatement();
 					ResultSet rs = st.executeQuery(selectSQL2);) {
 
 				while (rs.next()) {
-					Double nota = -1.0;
-					try {
-						if (rs.getLong("folditemid") != itemFold) {
-							nota = rs.getDouble("rate");
-						}
-					} catch (NumberFormatException nfe) {
-
-					}
-					itemList.add(new Item(rs.getLong("itemid"), nota));
+					itemList.add(new Item(rs.getLong("itemid"), rs
+							.getDouble("rate")));
 				}
 			} catch (Exception e) {
 				throw e;
@@ -79,7 +84,7 @@ public class CrossValidationTestersRepresenter implements Representer {
 					+ " u, "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.CENTRALITY)
-					+ " f where f.userid= u.friendid and u.userid= " + userId
+					+ " f where f.userid = u.friendid and u.userid= " + userId
 					+ " order by u.friendid;";
 
 			try (Connection conn = GetConnection.getConnection();
@@ -91,7 +96,6 @@ public class CrossValidationTestersRepresenter implements Representer {
 					friends.add(utemp);
 					centrality.put(utemp, rs.getDouble("centrality"));
 				}
-
 			} catch (Exception e) {
 				throw e;
 			}
@@ -101,36 +105,18 @@ public class CrossValidationTestersRepresenter implements Representer {
 		return um;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * br.ufu.facom.lsi.prefrec.representation.Representer#createUtilityMatrix
+	 * (int, int)
+	 */
 	@Override
-	public UtilityMatrix createUtilityMatrix(int parameter) throws Exception {
+	public UtilityMatrix createUtilityMatrix(int userFold, int itemFold)
+			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public static Map<Integer, Double> fetchValidationFold(int userId,
-			int idItemFold) throws Exception {
-
-		String selectSQL = "select itemid, rate from "
-				+ PropertiesUtil
-						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where folditemid = " + idItemFold + " and " + " userid = "
-				+ userId + " and rate <> -1 order by itemid;";
-
-		Map<Integer, Double> result = new HashMap<>();
-		try (Connection conn = GetConnection.getConnection();
-				Statement statement = conn.createStatement();
-				ResultSet rs = statement.executeQuery(selectSQL);) {
-
-			while (rs.next()) {
-				int itemId = rs.getInt("itemid");
-				int rate = rs.getInt("rate");
-
-				result.put(itemId, new Double(rate));
-			}
-			return result;
-
-		} catch (Exception e) {
-			throw e;
-		}
-	}
 }

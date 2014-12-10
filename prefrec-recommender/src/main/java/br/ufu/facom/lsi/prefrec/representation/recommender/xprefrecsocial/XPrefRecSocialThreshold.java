@@ -1,47 +1,30 @@
 /**
  * 
  */
-package br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial;
+package br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
+import br.ufu.facom.lsi.prefrec.model.User;
 import br.ufu.facom.lsi.prefrec.model.UtilityMatrix;
-import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.StrenghtTie;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialAverage;
 
 /**
  * @author Klerisson
  *
  */
-public class XPrefRecSocialThreshold extends XPrefRecSocial{
+public class XPrefRecSocialThreshold extends XPrefRecSocialAverage{
 
+	private double threshold;
+	
 	public XPrefRecSocialThreshold(
 			Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap,
-			Miner miner, StrenghtTie strenghtTieStrategy) {
+			Miner miner, StrenghtTie strenghtTieStrategy, double threshold) {
 		super(concensualMatrixMap, miner, strenghtTieStrategy);
-	}
-
-	/* (non-Javadoc)
-	 * @see br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec#run(java.lang.Long, java.lang.Double[][], java.util.Map, java.util.Map, br.ufu.facom.lsi.prefrec.model.UtilityMatrix)
-	 */
-	@Override
-	public Float[] run(Long userId, Double[][] itemItem,
-			Map<Integer, Double> itemIdToRate,
-			Map<Long, Double[]> clusterCenters,
-			UtilityMatrix testerUtilityMatrix) throws Exception {
-		// TODO Auto-generated method stub
-		return super.run(userId, itemItem, itemIdToRate, clusterCenters,
-				testerUtilityMatrix);
-	}
-
-	/* (non-Javadoc)
-	 * @see br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec#findSimilarConcensualMatrix(java.lang.Double[][])
-	 */
-	@Override
-	protected Double[][] findSimilarConcensualMatrix(Double[][] itemItem) {
-		// TODO Auto-generated method stub
-		return super.findSimilarConcensualMatrix(itemItem);
+		this.threshold = threshold;
 	}
 
 	/* (non-Javadoc)
@@ -51,11 +34,35 @@ public class XPrefRecSocialThreshold extends XPrefRecSocial{
 	protected Double[][] findSimilarConcensualMatrix(Long userId,
 			Map<Long, Double[]> clusterCenters,
 			UtilityMatrix testerUtilityMatrix) {
-		// TODO Auto-generated method stub
-		return super.findSimilarConcensualMatrix(userId, clusterCenters,
-				testerUtilityMatrix);
-	}
 
-	
+		User user = testerUtilityMatrix.getUserItemList(userId);
+		Map<User, Double> strenghtTieMap = this.strenghtTieStrategy
+				.strenghtTieCalc(user);
+
+		//Concensual matrix key
+		Double[][] similarMatrix = null;
+		int previous = Integer.MIN_VALUE;
+		for (Double[][] key : this.concensualMatrixMap.keySet()) {
+			List<Map<Long, Double[][]>> clusters = this.concensualMatrixMap
+					.get(key);
+			int strenghtSum = 0;
+			for (Map<Long, Double[][]> usersInCluster : clusters) {
+				Set<Long> usersId = usersInCluster.keySet();
+				for (Long userInClusterId : usersId) {
+					User uTemp = new User(userInClusterId);
+					if(user.getFriends().contains(uTemp) && strenghtTieMap.get(uTemp) >= this.threshold){
+						strenghtSum++;
+					}
+				}
+			}
+						
+			if(strenghtSum > previous){
+				previous = strenghtSum;
+				similarMatrix = key;
+			}
+		}
+		return similarMatrix;
+		
+	}
 
 }

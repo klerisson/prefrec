@@ -78,9 +78,9 @@ public class Miner {
 		Database d = new Database("../miningoutput/Fbprefrec/", attribsList, "user.cpm",
 				maxMult, ',');
 		Map<Key, FullTuple> tuples = d.getMapFullTuples();
-		for(Map.Entry<Key, FullTuple> entry : tuples.entrySet()) {
-			System.out.println(entry.getValue().toString());
-		}
+		//for(Map.Entry<Key, FullTuple> entry : tuples.entrySet()) {
+			//System.out.println(entry.getValue().toString());
+		//}
 		return tuples;
 	}
 

@@ -14,7 +14,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		try {
-			ExecuteCross.run(5);
+			ExecuteLeaveOneOut.run(10);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

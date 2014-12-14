@@ -52,7 +52,7 @@ public class LeaveOneOutTesterRepresenter implements Representer {
 		UtilityMatrix um = new UtilityMatrix();
 		List<Item> itemList = new ArrayList<>();
 
-		String selectSQL2 = "select itemid, rate, from (SELECT * FROM "
+		String selectSQL2 = "select itemid, rate from (SELECT * FROM "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
 				+ " where userid = " + userIdent + " order by RANDOM() limit "
@@ -106,7 +106,7 @@ public class LeaveOneOutTesterRepresenter implements Representer {
 		String selectSQL = "select itemid, rate from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where itemid not in " + listString + " order by itemid;";
+				+ " where itemid not in (" + listString + ") order by itemid;";
 
 		Map<Integer, Double> result = new HashMap<>();
 		try (Connection conn = GetConnection.getConnection();

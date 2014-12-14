@@ -24,7 +24,7 @@ import data.model.Key;
 public class Miner {
 
 	private String[] attributes = { "director.cpm", "genre.cpm",
-			"language.cpm", "star.cpm", "year.cpm", "user.cpm" };
+			"language.cpm", "star.cpm", "year.cpm","country.cpm", "user.cpm" };
 
 	private Map<Key, FullTuple> features;
 	private Map<Double[][], Validation> validationMap;
@@ -73,7 +73,7 @@ public class Miner {
 		ArrayList<String> attribsList = new ArrayList<>();
 		attribsList.addAll(Arrays.asList(attributes));
 
-		Integer[] maxMult = { 1, 3, 1, 4, 1, 0 };
+		Integer[] maxMult = { 3, 3, 6, 4, 1,4, 0 };//director,genre,language,star,year,country,user
 
 		Database d = new Database("../miningoutput/Fbprefrec/", attribsList, "user.cpm",
 				maxMult, ',');

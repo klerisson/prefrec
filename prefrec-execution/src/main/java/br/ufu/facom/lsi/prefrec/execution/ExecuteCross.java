@@ -27,6 +27,8 @@ import br.ufu.facom.lsi.prefrec.representation.RepresenterFacotry;
 import br.ufu.facom.lsi.prefrec.representation.impl.CrossValidationTestersRepresenter;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialAverage;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialThreshold;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.CentralityStrenghtTie;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.FriendshipStrenghtTie;
 
 public class ExecuteCross {
@@ -78,17 +80,21 @@ public class ExecuteCross {
 
 				miner.buildModels(new ArrayList<Double[][]>(agregator
 						.getConcensualMatrixMap().keySet()), itemMap);
-
+ 
 			} catch (Exception e1) {
 				throw e1;
 			}
 
-			// XPrefRec xprefrec = new XPrefRec(
-			// agregator.getConcensualMatrixMap(), miner);
+			//XPrefRec xprefrec = new XPrefRec(
+			 //agregator.getConcensualMatrixMap(), miner);
 
-			XPrefRec xprefrec = new XPrefRecSocialAverage(
+			//XPrefRec xprefrec = new XPrefRecSocialAverage(
+				//	agregator.getConcensualMatrixMap(), miner,
+					//new CentralityStrenghtTie());
+			
+			XPrefRec xprefrec = new XPrefRecSocialThreshold(
 					agregator.getConcensualMatrixMap(), miner,
-					new FriendshipStrenghtTie());
+					new CentralityStrenghtTie(),.001);
 
 			for (int j = 0; j < partitions; j++) {
 

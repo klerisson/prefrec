@@ -43,7 +43,7 @@ public class ExecuteLeaveOneOut {
 
 			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 					.getClusterBuilder(ClusterEnum.KMEANS);
-			Clusterer clusterer = clustererBuilder.clustersNumber(2)
+			Clusterer clusterer = clustererBuilder.clustersNumber(5)
 					.measure(new MyEuclideanDistance())
 					.centroidStrategy(CentroidStrategy.MAJORITY).build();
 
@@ -80,9 +80,11 @@ public class ExecuteLeaveOneOut {
 				throw e1;
 			}
 
-			XPrefRec xprefrec = new XPrefRecSocialAverage(
-					agregator.getConcensualMatrixMap(), miner,
-					new FriendshipStrenghtTie());
+			XPrefRec xprefrec = new XPrefRec(
+			 agregator.getConcensualMatrixMap(), miner);
+			//XPrefRec xprefrec = new XPrefRecSocialAverage(
+				//	agregator.getConcensualMatrixMap(), miner,
+					//new FriendshipStrenghtTie());
 
 			LeaveOneOutTesterRepresenter testerRepresenter = (LeaveOneOutTesterRepresenter) RepresenterFacotry
 					.getRepresenter(RepresenterEnum.LEAVE_ONE_OUT_TESTER);

@@ -60,7 +60,7 @@ public class LeaveOneOutRepresenter implements Representer {
 			String selectSQL2 = "select itemid, rate from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-					+ " where and userid = "
+					+ " where  userid = "
 					+ userId + " order by itemid;";
 
 			try (Connection conn = GetConnection.getConnection();

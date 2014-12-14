@@ -16,7 +16,7 @@ import br.ufu.facom.lsi.prefrec.util.AppPropertiesEnum;
 import br.ufu.facom.lsi.prefrec.util.GetConnection;
 import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
 
-public class CrossValidationTestersRepresenter implements Representer {
+public class CrossValidationTestersRepresenter extends Representer {
 
 	@Override
 	public UtilityMatrix createUtilityMatrix(int userFold, int itemFold)

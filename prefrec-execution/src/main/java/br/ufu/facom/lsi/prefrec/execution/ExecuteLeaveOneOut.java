@@ -25,21 +25,18 @@ import br.ufu.facom.lsi.prefrec.representation.RepresenterEnum;
 import br.ufu.facom.lsi.prefrec.representation.RepresenterFacotry;
 import br.ufu.facom.lsi.prefrec.representation.impl.LeaveOneOutTesterRepresenter;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec;
-import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialAverage;
-import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.FriendshipStrenghtTie;
 import br.ufu.facom.lsi.prefrec.util.AppPropertiesEnum;
 import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
 
 public class ExecuteLeaveOneOut {
 
-	public static void run(int usersQt) throws Exception {
+	public static void run(List<Long> usersId) throws Exception {
 
-		for (int i = 0; i < usersQt; i++) {
-
-			UtilityMatrix utilityMatrix = null;
+		for (Long currentUserId : usersId ) {
+			
 			Representer representer = RepresenterFacotry
 					.getRepresenter(RepresenterEnum.LEAVE_ONE_OUT);
-			utilityMatrix = representer.createUtilityMatrix(i);
+			UtilityMatrix utilityMatrix = representer.createUtilityMatrix(currentUserId.intValue());
 
 			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 					.getClusterBuilder(ClusterEnum.KMEANS);
@@ -89,7 +86,7 @@ public class ExecuteLeaveOneOut {
 			LeaveOneOutTesterRepresenter testerRepresenter = (LeaveOneOutTesterRepresenter) RepresenterFacotry
 					.getRepresenter(RepresenterEnum.LEAVE_ONE_OUT_TESTER);
 			UtilityMatrix testerUtilityMatrix = testerRepresenter
-					.createUtilityMatrix(i, Integer.parseInt(PropertiesUtil
+					.createUtilityMatrix(currentUserId.intValue(), Integer.parseInt(PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.RATED_SIZE)));
 			Map<Long, Double[][]> testersPrefMatrixMap = PreferenceMatrix
 					.build(testerUtilityMatrix);

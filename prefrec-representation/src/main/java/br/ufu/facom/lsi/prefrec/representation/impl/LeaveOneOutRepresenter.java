@@ -23,7 +23,7 @@ import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
  * @author Klerisson
  *
  */
-public class LeaveOneOutRepresenter implements Representer {
+public class LeaveOneOutRepresenter extends Representer {
 
 	/*
 	 * (non-Javadoc)

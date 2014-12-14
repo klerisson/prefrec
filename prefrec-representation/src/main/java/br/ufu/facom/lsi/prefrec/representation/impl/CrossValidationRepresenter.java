@@ -20,7 +20,7 @@ import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
  * @author Klerisson
  *
  */
-public class CrossValidationRepresenter implements Representer {
+public class CrossValidationRepresenter extends Representer {
 
 	/*
 	 * (non-Javadoc)

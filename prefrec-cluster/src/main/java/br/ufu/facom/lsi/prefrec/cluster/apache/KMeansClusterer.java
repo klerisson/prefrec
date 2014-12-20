@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.Clusterable;
@@ -65,11 +66,14 @@ public class KMeansClusterer<T extends Clusterable> extends KMeansPlusPlusCluste
         final List<CentroidCluster<T>> resultSet = new ArrayList<CentroidCluster<T>>();
 
         int chosen;
+        Random r = new Random(19700621);
+        
         
         for(int i = 0; i < k; i++) {
         	
-        	chosen = (int) Math.round(Math.random() * numPoints);
-        	
+        	//chosen = (int) Math.round(Math.random() * numPoints);
+        	chosen = (int) Math.round(r.nextInt(numPoints));
+       
         	final T p = pointList.get(chosen);
 
             resultSet.add(new CentroidCluster<T> (p));

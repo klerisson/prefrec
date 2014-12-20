@@ -31,7 +31,8 @@ import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
 public class ExecuteLeaveOneOut {
 
 	public static void run(List<Long> usersId) throws Exception {
-
+		//int h=1;
+for(int h=1;h<=5;h++){
 		for (Long currentUserId : usersId ) {
 			
 			Representer representer = RepresenterFacotry
@@ -40,14 +41,14 @@ public class ExecuteLeaveOneOut {
 
 			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 					.getClusterBuilder(ClusterEnum.KMEANS);
-			Clusterer clusterer = clustererBuilder.clustersNumber(5)
+			Clusterer clusterer = clustererBuilder.clustersNumber(h)
 					.measure(new MyEuclideanDistance())
 					.centroidStrategy(CentroidStrategy.MAJORITY).build();
 
 			// KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder)
 			// ClustererFactory
 			// .getClusterBuilder(ClusterEnum.KMEANS_PLUS_PLUS);
-			// Clusterer clusterer = clustererBuilder.clustersNumber(4)
+			// Clusterer clusterer = clustererBuilder.clustersNumber(3)
 			// .measure(new MyEuclideanDistance()).build();
 
 			Map<Long, List<User>> cluster = clusterer.cluster(utilityMatrix);
@@ -112,11 +113,11 @@ public class ExecuteLeaveOneOut {
 						// testerUtilityMatrix);
 
 						if (precisionRecall != null) {
-							writeOutput(userId, precisionRecall);
+							writeOutput(userId, precisionRecall,h);
 						}
 
 					} catch (Exception e) {
-						writeOutput(userId, new Float[] { -1f, -1f });
+						writeOutput(userId, new Float[] { -1f, -1f },h);
 					}
 				}
 
@@ -124,9 +125,10 @@ public class ExecuteLeaveOneOut {
 				throw e;
 			}
 		}
+      }
 	}
 	
-	private static void writeOutput(Long userId, Float[] precisionRecall) {
+	private static void writeOutput(Long userId, Float[] precisionRecall, int fileId) {
 
 		try {
 			StringBuilder msg = new StringBuilder();
@@ -134,10 +136,10 @@ public class ExecuteLeaveOneOut {
 					.append(";").append(precisionRecall[1])
 					.append(System.lineSeparator());
 
-			if (!Files.exists(Paths.get("./output.cvs"))) {
-				Files.createFile(Paths.get("./output.cvs"));
+			if (!Files.exists(Paths.get("./output"+fileId+".cvs"))) {
+				Files.createFile(Paths.get("./output"+fileId+".cvs"));
 			}
-			Files.write(Paths.get("./output.cvs"), msg.toString().getBytes(),
+			Files.write(Paths.get("./output"+fileId+".cvs"), msg.toString().getBytes(),
 					StandardOpenOption.APPEND);
 
 		} catch (IOException e) {

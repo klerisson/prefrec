@@ -3,7 +3,7 @@ package br.ufu.facom.lsi.prefrec.util;
 public enum AppPropertiesEnum {
 
 	AVALICAO_TABLE("avaliacao_filme"), DATA_TABLE_STRATIFIED("datatable"), FRIENDSHIP_TABLE(
-			"friendshiptable"), CENTRALITY("friendscentrality"), RATED_SIZE("ratedsize");
+			"friendshiptable"), CENTRALITY("friendscentrality"), RATED_SIZE("ratedsize"), MUTUALFRIENDS("mutualfriends");
 
 	private String value;
 

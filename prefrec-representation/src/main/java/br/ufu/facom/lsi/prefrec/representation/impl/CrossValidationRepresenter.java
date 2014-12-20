@@ -76,13 +76,18 @@ public class CrossValidationRepresenter extends Representer {
 			// retrieve friends list and their centrality
 			List<User> friends = new ArrayList<>();
 			Map<User, Double> centrality = new HashMap<>();
-			String friendshipSql = "select u.friendid,f.centrality from "
+			Map<User, Double> mutualFriends = new HashMap<>();
+			String friendshipSql = "select u.friendid,f.centrality,j.jaccard from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
 					+ " u, "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.CENTRALITY)
-					+ " f where f.userid = u.friendid and u.userid= " + userId
+					+ " f, "
+					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.MUTUALFRIENDS)
+					+ " j, where u.userid=j.userid and f.userid = u.friendid and u.friendid=j.friendid "
+					+ "and f.userid=j.friendid and u.userid= " + userId
 					+ " order by u.friendid;";
 
 			try (Connection conn = GetConnection.getConnection();
@@ -93,12 +98,13 @@ public class CrossValidationRepresenter extends Representer {
 					User utemp = new User(rs.getLong("friendid"));
 					friends.add(utemp);
 					centrality.put(utemp, rs.getDouble("centrality"));
+					mutualFriends.put(utemp, rs.getDouble("jaccard"));
 				}
 			} catch (Exception e) {
 				throw e;
 			}
 			
-			um.addUser(new User(userId, itemList, friends, centrality));
+			um.addUser(new User(userId, itemList, friends, centrality,mutualFriends));
 		}
 		return um;
 	}

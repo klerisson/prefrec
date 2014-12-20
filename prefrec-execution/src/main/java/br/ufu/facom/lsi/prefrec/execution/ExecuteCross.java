@@ -44,7 +44,7 @@ public class ExecuteCross {
 
 			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 					.getClusterBuilder(ClusterEnum.KMEANS);
-			Clusterer clusterer = clustererBuilder.clustersNumber(2)
+			Clusterer clusterer = clustererBuilder.clustersNumber(1)
 					.measure(new MyEuclideanDistance())
 					.centroidStrategy(CentroidStrategy.MAJORITY).build();
 
@@ -85,16 +85,16 @@ public class ExecuteCross {
 				throw e1;
 			}
 
-			//XPrefRec xprefrec = new XPrefRec(
-			 //agregator.getConcensualMatrixMap(), miner);
+			XPrefRec xprefrec = new XPrefRec(
+			agregator.getConcensualMatrixMap(), miner);
 
 			//XPrefRec xprefrec = new XPrefRecSocialAverage(
 				//	agregator.getConcensualMatrixMap(), miner,
 					//new CentralityStrenghtTie());
 			
-			XPrefRec xprefrec = new XPrefRecSocialThreshold(
-					agregator.getConcensualMatrixMap(), miner,
-					new CentralityStrenghtTie(),.001);
+			//XPrefRec xprefrec = new XPrefRecSocialThreshold(
+				//	agregator.getConcensualMatrixMap(), miner,
+					//new CentralityStrenghtTie(),.001);
 
 			for (int j = 0; j < partitions; j++) {
 

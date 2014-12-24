@@ -25,6 +25,8 @@ import br.ufu.facom.lsi.prefrec.representation.RepresenterEnum;
 import br.ufu.facom.lsi.prefrec.representation.RepresenterFacotry;
 import br.ufu.facom.lsi.prefrec.representation.impl.LeaveOneOutTesterRepresenter;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialAverage;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.FriendshipStrenghtTie;
 import br.ufu.facom.lsi.prefrec.util.AppPropertiesEnum;
 import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
 
@@ -43,7 +45,7 @@ for(int h=1;h<=5;h++){
 					.getClusterBuilder(ClusterEnum.KMEANS);
 			Clusterer clusterer = clustererBuilder.clustersNumber(h)
 					.measure(new MyEuclideanDistance())
-					.centroidStrategy(CentroidStrategy.MAJORITY).build();
+					.centroidStrategy(CentroidStrategy.AVERAGE).build();
 
 			// KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder)
 			// ClustererFactory
@@ -78,17 +80,19 @@ for(int h=1;h<=5;h++){
 				throw e1;
 			}
 
-			XPrefRec xprefrec = new XPrefRec(
-			 agregator.getConcensualMatrixMap(), miner);
-			//XPrefRec xprefrec = new XPrefRecSocialAverage(
-				//	agregator.getConcensualMatrixMap(), miner,
-					//new FriendshipStrenghtTie());
+			//XPrefRec xprefrec = new XPrefRec(
+			 //agregator.getConcensualMatrixMap(), miner);
+			XPrefRec xprefrec = new XPrefRecSocialAverage(
+					agregator.getConcensualMatrixMap(), miner,
+					new FriendshipStrenghtTie());
 
 			LeaveOneOutTesterRepresenter testerRepresenter = (LeaveOneOutTesterRepresenter) RepresenterFacotry
 					.getRepresenter(RepresenterEnum.LEAVE_ONE_OUT_TESTER);
 			UtilityMatrix testerUtilityMatrix = testerRepresenter
 					.createUtilityMatrix(currentUserId.intValue(), Integer.parseInt(PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.RATED_SIZE)));
+			int ratedSize=Integer.parseInt(PropertiesUtil
+					.getAppPropertie(AppPropertiesEnum.RATED_SIZE));
 			Map<Long, Double[][]> testersPrefMatrixMap = PreferenceMatrix
 					.build(testerUtilityMatrix);
 
@@ -113,11 +117,11 @@ for(int h=1;h<=5;h++){
 						// testerUtilityMatrix);
 
 						if (precisionRecall != null) {
-							writeOutput(userId, precisionRecall,h);
+							writeOutput(userId, precisionRecall,h,ratedSize);
 						}
 
 					} catch (Exception e) {
-						writeOutput(userId, new Float[] { -1f, -1f },h);
+						writeOutput(userId, new Float[] { -1f, -1f },h,ratedSize);
 					}
 				}
 
@@ -128,7 +132,7 @@ for(int h=1;h<=5;h++){
       }
 	}
 	
-	private static void writeOutput(Long userId, Float[] precisionRecall, int fileId) {
+	private static void writeOutput(Long userId, Float[] precisionRecall, int fileId,int ratedS) {
 
 		try {
 			StringBuilder msg = new StringBuilder();
@@ -136,10 +140,10 @@ for(int h=1;h<=5;h++){
 					.append(";").append(precisionRecall[1])
 					.append(System.lineSeparator());
 
-			if (!Files.exists(Paths.get("./output"+fileId+".cvs"))) {
-				Files.createFile(Paths.get("./output"+fileId+".cvs"));
+			if (!Files.exists(Paths.get("./output"+fileId+ratedS+".cvs"))) {
+				Files.createFile(Paths.get("./output"+fileId+ratedS+".cvs"));
 			}
-			Files.write(Paths.get("./output"+fileId+".cvs"), msg.toString().getBytes(),
+			Files.write(Paths.get("./output"+fileId+ratedS+".cvs"), msg.toString().getBytes(),
 					StandardOpenOption.APPEND);
 
 		} catch (IOException e) {

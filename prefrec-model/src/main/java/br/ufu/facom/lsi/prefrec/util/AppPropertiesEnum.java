@@ -4,7 +4,8 @@ public enum AppPropertiesEnum {
 
 	AVALICAO_TABLE("avaliacao_filme"), DATA_TABLE_STRATIFIED("datatable"), FRIENDSHIP_TABLE(
 			"friendshiptable"), CENTRALITY("friendscentrality"), RATED_SIZE("ratedsize"), 
-			MUTUALFRIENDS("mutualfriends"), DATATABLE_RAND("datatable_rand"), INTERACTION("friendsinteraction");
+			MUTUALFRIENDS("mutualfriends"), DATATABLE_RAND("datatable_rand"), INTERACTION("friendsinteraction"), 
+			SIMILARITY("similarity_score");
 
 	private String value;
 

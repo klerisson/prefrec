@@ -20,6 +20,8 @@ public class User implements Serializable {
 
 	private Map<User, Double> mutualFriendsMap;
 	private Map<User, Double>interactionMap;
+
+	private Map<User, Double> similarityMap;
 	
 	public User(Long userId) {
 		super();
@@ -47,6 +49,17 @@ public class User implements Serializable {
 	}
 
 	
+	
+	public User(Long id, List<Item> items, List<User> friends,
+			Map<User, Double> centralityMap,Map<User, Double> mutualFriendsMap,Map<User, 
+			Double> interactionMap ,Map<User, 
+			Double> similarityMap) {
+		this(id, items, friends);
+		this.centralityMap = centralityMap;
+		this.mutualFriendsMap = mutualFriendsMap;
+		this.interactionMap = interactionMap;
+		this.similarityMap = similarityMap;
+	}
 	
 	/**
 	 * @param id
@@ -120,6 +133,11 @@ public class User implements Serializable {
 		// TODO Auto-generated method stub
 		return interactionMap;
 	}
+	
+	public Map<User, Double> getSimilarityMap() {
+		// TODO Auto-generated method stub
+		return similarityMap;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -151,6 +169,8 @@ public class User implements Serializable {
 			return false;
 		return true;
 	}
+
+
 
 	
 

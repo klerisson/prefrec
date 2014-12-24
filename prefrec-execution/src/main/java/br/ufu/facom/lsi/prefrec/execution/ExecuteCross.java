@@ -34,7 +34,7 @@ import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.streng
 public class ExecuteCross {
 
 	public static void run(int partitions) throws Exception {
-
+		for(int h=1;h<=5;h++){
 		for (int i = 0; i < partitions; i++) {
 
 			UtilityMatrix utilityMatrix = null;
@@ -44,9 +44,9 @@ public class ExecuteCross {
 
 			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 					.getClusterBuilder(ClusterEnum.KMEANS);
-			Clusterer clusterer = clustererBuilder.clustersNumber(1)
+			Clusterer clusterer = clustererBuilder.clustersNumber(h)
 					.measure(new MyEuclideanDistance())
-					.centroidStrategy(CentroidStrategy.MAJORITY).build();
+					.centroidStrategy(CentroidStrategy.AVERAGE).build();
 
 			// KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder)
 			// ClustererFactory
@@ -85,8 +85,12 @@ public class ExecuteCross {
 				throw e1;
 			}
 
-			XPrefRec xprefrec = new XPrefRec(
-			agregator.getConcensualMatrixMap(), miner);
+			//XPrefRec xprefrec = new XPrefRec(
+			//agregator.getConcensualMatrixMap(), miner);
+			
+			XPrefRec xprefrec = new XPrefRecSocialAverage(
+					agregator.getConcensualMatrixMap(), miner,
+					new FriendshipStrenghtTie());
 
 			//XPrefRec xprefrec = new XPrefRecSocialAverage(
 				//	agregator.getConcensualMatrixMap(), miner,
@@ -130,12 +134,12 @@ public class ExecuteCross {
 
 								if (precisionRecall != null) {
 									writeOutput(entry.getKey(), i, j,
-											precisionRecall);
+											precisionRecall,h);
 								}
 
 							} catch (Exception e) {
 								writeOutput(entry.getKey(), i, j, new Float[] {
-										-1f, -1f });
+										-1f, -1f },h);
 							}
 						}
 					} catch (Exception e) {
@@ -144,10 +148,11 @@ public class ExecuteCross {
 				}
 			}
 		}
+		}
 	}
 
 	private static void writeOutput(Long userId, int userFoldId,
-			int itemFoldId, Float[] precisionRecall) {
+			int itemFoldId, Float[] precisionRecall,int h) {
 
 		try {
 
@@ -157,10 +162,10 @@ public class ExecuteCross {
 					.append(";").append(precisionRecall[1])
 					.append(System.lineSeparator());
 
-			if (!Files.exists(Paths.get("./output.cvs"))) {
-				Files.createFile(Paths.get("./output.cvs"));
+			if (!Files.exists(Paths.get("./output"+h+".cvs"))) {
+				Files.createFile(Paths.get("./output"+h+".cvs"));
 			}
-			Files.write(Paths.get("./output.cvs"), msg.toString().getBytes(),
+			Files.write(Paths.get("./output"+h+".cvs"), msg.toString().getBytes(),
 					StandardOpenOption.APPEND);
 
 		} catch (IOException e) {

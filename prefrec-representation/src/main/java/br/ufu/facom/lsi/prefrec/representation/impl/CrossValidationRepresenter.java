@@ -78,23 +78,28 @@ public class CrossValidationRepresenter extends Representer {
 			Map<User, Double> centrality = new HashMap<>();
 			Map<User, Double> mutualFriends = new HashMap<>();
 			Map<User, Double> interaction = new HashMap<>();
-			String friendshipSql = "select u.friendid,f.centrality,j.jaccard,i.interaction from "
+			Map<User, Double> similarity = new HashMap<>();
+			String friendshipSql = "select f.friendid,c.centrality,m.jaccard,i.interaction,s.similarity from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
-					+ " u, "
-					+ PropertiesUtil
-							.getAppPropertie(AppPropertiesEnum.CENTRALITY)
 					+ " f, "
 					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.CENTRALITY)
+					+ " c, "
+					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.MUTUALFRIENDS)
-							+ " j, "
+							+ " m, "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.INTERACTION)
-					+ " i where u.userid=j.userid and f.userid = u.friendid and u.friendid=j.friendid "
-					+ "and u.userid=i.userid and f.userid = i.friendid and u.friendid=i.friendid "
-					+ "and i.userid=j.userid and  i.friendid=j.friendid "
-					+ "and f.userid=j.friendid and u.userid= " + userId
-					+ " order by u.friendid;";
+					+ " i,"
+					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.SIMILARITY)
+					+ " s where f.friendid=c.userid and f.userid=m.userid and f.userid=i.userid and f.userid=s.userid and"
+					+" f.friendid=m.friendid and f.friendid=i.friendid and f.friendid=s.friendid and" 
+					+" c.userid=m.friendid and c.userid=i.friendid and c.userid=s.friendid and" 
+					+" m.userid=i.userid and m.userid=s.userid and m.friendid=i.friendid and m.friendid=s.friendid and" 
+					+" i.userid=s.userid and i.friendid=s.friendid and f.userid= " + userId
+					+ " order by f.friendid;";
 
 			try (Connection conn = GetConnection.getConnection();
 					Statement st = conn.createStatement();
@@ -106,12 +111,13 @@ public class CrossValidationRepresenter extends Representer {
 					centrality.put(utemp, rs.getDouble("centrality"));
 					mutualFriends.put(utemp, rs.getDouble("jaccard"));
 					interaction.put(utemp, rs.getDouble("interaction"));
+					similarity.put(utemp, rs.getDouble("similarity"));
 				}
 			} catch (Exception e) {
 				throw e;
 			}
 			
-			um.addUser(new User(userId, itemList, friends, centrality,mutualFriends,interaction));
+			um.addUser(new User(userId, itemList, friends, centrality,mutualFriends,interaction,similarity));
 		}
 		return um;
 	}

@@ -52,11 +52,14 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 		UtilityMatrix um = new UtilityMatrix();
 		List<Item> itemList = new ArrayList<>();
 
-		String selectSQL2 = "select itemid, rate from (SELECT * FROM "
-				+ PropertiesUtil
-						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where userid = " + userIdent + " order by RANDOM() limit "
-				+ itemQt + ") result order by itemid;";
+		//String selectSQL2 = "select itemid, rate from (SELECT * FROM "
+			//	+ PropertiesUtil
+				//		.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+				//+ " where rate<>-1 and userid = " + userIdent + " order by RANDOM() limit "
+				//+ itemQt + ") result order by itemid;";
+		String selectSQL2 = "select itemid, rate from "
+			+ PropertiesUtil
+					.getAppPropertie(AppPropertiesEnum.DATATABLE_RAND) + " where userid = " + userIdent+ "order by itemid;";
 
 		try (Connection conn = GetConnection.getConnection();
 				Statement st = conn.createStatement();
@@ -74,7 +77,8 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 		List<User> friends = new ArrayList<>();
 		Map<User, Double> centrality = new HashMap<>();
 		Map<User, Double> mutualFriends = new HashMap<>();
-		String friendshipSql = "select u.friendid,f.centrality,j.jaccard from "
+		Map<User, Double> interaction = new HashMap<>();
+		String friendshipSql = "select u.friendid,f.centrality,j.jaccard,i.interaction from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
 				+ " u, "
@@ -83,7 +87,12 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 				+ " f, "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.MUTUALFRIENDS)
-				+ " j where u.userid=j.userid and f.userid = u.friendid and u.friendid=j.friendid "
+						+ " j, "
+					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.INTERACTION)
+					+ " i where u.userid=j.userid and f.userid = u.friendid and u.friendid=j.friendid "
+					+ "and u.userid=i.userid and f.userid = i.friendid and u.friendid=i.friendid "
+					+ "and i.userid=j.userid and  i.friendid=j.friendid "
 				+ "and f.userid=j.friendid and u.userid= " + userIdent
 				+ " order by u.friendid;";
 
@@ -96,6 +105,7 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 				friends.add(utemp);
 				centrality.put(utemp, rs.getDouble("centrality"));
 				mutualFriends.put(utemp, rs.getDouble("jaccard"));
+				interaction.put(utemp, rs.getDouble("interaction"));
 			}
 		} catch (Exception e) {
 			throw e;
@@ -113,7 +123,7 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 		String selectSQL = "select itemid, rate from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where itemid not in (" + listString + ") order by itemid;";
+				+ " where rate<>-1 and itemid not in (" + listString + ") order by itemid;";
 
 		Map<Integer, Double> result = new HashMap<>();
 		try (Connection conn = GetConnection.getConnection();

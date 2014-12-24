@@ -19,6 +19,12 @@ public class User implements Serializable {
 	private Map<User, Double> centralityMap;
 
 	private Map<User, Double> mutualFriendsMap;
+	private Map<User, Double>interactionMap;
+	
+	public User(Long userId) {
+		super();
+		this.id = userId;
+	}
 
 	/**
 	 * @param id
@@ -49,6 +55,15 @@ public class User implements Serializable {
 	 * @param centralityMap
 	 */
 	public User(Long id, List<Item> items, List<User> friends,
+			Map<User, Double> centralityMap,Map<User, Double> mutualFriendsMap,Map<User, 
+			Double> interactionMap ) {
+		this(id, items, friends);
+		this.centralityMap = centralityMap;
+		this.mutualFriendsMap = mutualFriendsMap;
+		this.interactionMap = interactionMap;
+	}
+	
+	public User(Long id, List<Item> items, List<User> friends,
 			Map<User, Double> centralityMap,Map<User, Double> mutualFriendsMap) {
 		this(id, items, friends);
 		this.centralityMap = centralityMap;
@@ -60,10 +75,6 @@ public class User implements Serializable {
 		this.centralityMap = centralityMap;
 	}
 
-	public User(Long userId) {
-		super();
-		this.id = userId;
-	}
 
 	/**
 	 * @return the id
@@ -105,6 +116,10 @@ public class User implements Serializable {
 		// TODO Auto-generated method stub
 		return mutualFriendsMap;
 	}
+	public Map<User, Double> getInteractionMap() {
+		// TODO Auto-generated method stub
+		return interactionMap;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -137,6 +152,7 @@ public class User implements Serializable {
 		return true;
 	}
 
+	
 
 	
 	

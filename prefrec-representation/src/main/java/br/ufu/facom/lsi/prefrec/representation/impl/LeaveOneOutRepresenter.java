@@ -79,7 +79,8 @@ public class LeaveOneOutRepresenter extends Representer {
 			List<User> friends = new ArrayList<>();
 			Map<User, Double> centrality = new HashMap<>();
 			Map<User, Double> mutualFriends = new HashMap<>();
-			String friendshipSql = "select u.friendid,f.centrality,j.jaccard from "
+			Map<User, Double> interaction = new HashMap<>();
+			String friendshipSql = "select u.friendid,f.centrality,j.jaccard,i.interaction from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
 					+ " u, "
@@ -88,7 +89,12 @@ public class LeaveOneOutRepresenter extends Representer {
 					+ " f, "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.MUTUALFRIENDS)
-					+ " j where u.userid=j.userid and f.userid = u.friendid and u.friendid=j.friendid "
+							+ " j, "
+					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.INTERACTION)
+					+ " i where u.userid=j.userid and f.userid = u.friendid and u.friendid=j.friendid "
+					+ "and u.userid=i.userid and f.userid = i.friendid and u.friendid=i.friendid "
+					+ "and i.userid=j.userid and  i.friendid=j.friendid "
 					+ "and f.userid=j.friendid and u.userid= " + userId
 					+ " order by u.friendid;";
 
@@ -101,6 +107,7 @@ public class LeaveOneOutRepresenter extends Representer {
 					friends.add(utemp);
 					centrality.put(utemp, rs.getDouble("centrality"));
 					mutualFriends.put(utemp, rs.getDouble("jaccard"));
+					interaction.put(utemp, rs.getDouble("interaction"));
 				}
 			} catch (Exception e) {
 				throw e;

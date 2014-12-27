@@ -52,14 +52,16 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 		UtilityMatrix um = new UtilityMatrix();
 		List<Item> itemList = new ArrayList<>();
 
-		//String selectSQL2 = "select itemid, rate from (SELECT * FROM "
-			//	+ PropertiesUtil
-				//		.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				//+ " where rate<>-1 and userid = " + userIdent + " order by RANDOM() limit "
-				//+ itemQt + ") result order by itemid;";
+		// String selectSQL2 = "select itemid, rate from (SELECT * FROM "
+		// + PropertiesUtil
+		// .getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+		// + " where rate<>-1 and userid = " + userIdent +
+		// " order by RANDOM() limit "
+		// + itemQt + ") result order by itemid;";
 		String selectSQL2 = "select itemid, rate from "
-			+ PropertiesUtil
-					.getAppPropertie(AppPropertiesEnum.DATATABLE_RAND) + " where userid = " + userIdent+ "order by itemid;";
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.DATATABLE_RAND)
+				+ " where userid = " + userIdent + " order by itemid;";
 
 		try (Connection conn = GetConnection.getConnection();
 				Statement st = conn.createStatement();
@@ -83,24 +85,22 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
 				+ " f, "
-				+ PropertiesUtil
-						.getAppPropertie(AppPropertiesEnum.CENTRALITY)
+				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.CENTRALITY)
 				+ " c, "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.MUTUALFRIENDS)
-						+ " m, "
-				+ PropertiesUtil
-						.getAppPropertie(AppPropertiesEnum.INTERACTION)
+				+ " m, "
+				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.INTERACTION)
 				+ " i,"
-				+ PropertiesUtil
-						.getAppPropertie(AppPropertiesEnum.SIMILARITY)
+				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.SIMILARITY)
 				+ " s where f.friendid=c.userid and f.userid=m.userid and f.userid=i.userid and f.userid=s.userid and"
-				+" f.friendid=m.friendid and f.friendid=i.friendid and f.friendid=s.friendid and" 
-				+" c.userid=m.friendid and c.userid=i.friendid and c.userid=s.friendid and" 
-				+" m.userid=i.userid and m.userid=s.userid and m.friendid=i.friendid and m.friendid=s.friendid and" 
-				+" i.userid=s.userid and i.friendid=s.friendid and f.userid= " + userIdent
-				+ " order by f.friendid;";
+				+ " f.friendid=m.friendid and f.friendid=i.friendid and f.friendid=s.friendid and"
+				+ " c.userid=m.friendid and c.userid=i.friendid and c.userid=s.friendid and"
+				+ " m.userid=i.userid and m.userid=s.userid and m.friendid=i.friendid and m.friendid=s.friendid and"
+				+ " i.userid=s.userid and i.friendid=s.friendid and f.userid= "
+				+ userIdent + " order by f.friendid;";
 
+		//System.out.println(friendshipSql);
 		try (Connection conn = GetConnection.getConnection();
 				Statement st = conn.createStatement();
 				ResultSet rs = st.executeQuery(friendshipSql);) {
@@ -117,20 +117,30 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 			throw e;
 		}
 
-		um.addUser(new User(new Long(userIdent), itemList, friends, mutualFriends,interaction,similarity));
+		um.addUser(new User(new Long(userIdent), itemList, friends,centrality,
+				mutualFriends, interaction, similarity));
 		return um;
 	}
 
-	public Map<Integer, Double> getValidationItems(List<Long> list) throws Exception {
+	public Map<Integer, Double> getValidationItems(Long userId,List<Long> uniqueItemIds,
+			boolean isSocial) throws Exception {
 
-		String listString = list.stream().map(Object::toString)
-                .collect(Collectors.joining(", "));
-		
-		String selectSQL = "select itemid, rate from "
-				+ PropertiesUtil
-						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-				+ " where rate<>-1 and itemid not in (" + listString + ") order by itemid;";
+		String listString = uniqueItemIds.stream().map(Object::toString)
+				.collect(Collectors.joining(", "));
 
+		String selectSQL = null;
+		if (isSocial) {
+			selectSQL = "select itemid, rate from "
+					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+					+ " where rate <> -1 and userid="+userId+" order by itemid;";
+		} else {
+			selectSQL = "select itemid, rate from "
+					+ PropertiesUtil
+							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+					+ " where rate<>-1 and itemid not in (" + listString
+					+ ") and userid="+userId+"order by itemid;";
+		}
 		Map<Integer, Double> result = new HashMap<>();
 		try (Connection conn = GetConnection.getConnection();
 				Statement statement = conn.createStatement();
@@ -147,5 +157,6 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 		} catch (Exception e) {
 			throw e;
 		}
+
 	}
 }

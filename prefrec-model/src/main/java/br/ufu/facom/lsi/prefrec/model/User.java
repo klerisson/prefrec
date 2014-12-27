@@ -19,7 +19,7 @@ public class User implements Serializable {
 	private Map<User, Double> centralityMap;
 
 	private Map<User, Double> mutualFriendsMap;
-	private Map<User, Double>interactionMap;
+	private Map<User, Double> interactionMap;
 
 	private Map<User, Double> similarityMap;
 	

@@ -25,8 +25,13 @@ import br.ufu.facom.lsi.prefrec.representation.RepresenterEnum;
 import br.ufu.facom.lsi.prefrec.representation.RepresenterFacotry;
 import br.ufu.facom.lsi.prefrec.representation.impl.LeaveOneOutTesterRepresenter;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocial;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialAverage;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.CentralityStrenghtTie;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.FriendshipStrenghtTie;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.InteractionStrenghtTie;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.MutualFriendsStrenghtTie;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.SimilarityStrenghtTie;
 import br.ufu.facom.lsi.prefrec.util.AppPropertiesEnum;
 import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
 
@@ -84,7 +89,7 @@ for(int h=1;h<=5;h++){
 			 //agregator.getConcensualMatrixMap(), miner);
 			XPrefRec xprefrec = new XPrefRecSocialAverage(
 					agregator.getConcensualMatrixMap(), miner,
-					new FriendshipStrenghtTie());
+					new InteractionStrenghtTie());
 
 			LeaveOneOutTesterRepresenter testerRepresenter = (LeaveOneOutTesterRepresenter) RepresenterFacotry
 					.getRepresenter(RepresenterEnum.LEAVE_ONE_OUT_TESTER);
@@ -97,11 +102,12 @@ for(int h=1;h<=5;h++){
 					.build(testerUtilityMatrix);
 
 			try {
-				Map<Integer, Double> itemsIdToRate = testerRepresenter
-						.getValidationItems(testerUtilityMatrix
-								.getUniqueItemIds());
-
 				Long userId = testersPrefMatrixMap.keySet().iterator().next();
+				Map<Integer, Double> itemsIdToRate = testerRepresenter
+						.getValidationItems(userId,testerUtilityMatrix
+								.getUniqueItemIds(), (xprefrec instanceof XPrefRecSocial) ? true : false);
+
+				
 				if (itemsIdToRate != null && itemsIdToRate.size() > 1) {
 					try {
 

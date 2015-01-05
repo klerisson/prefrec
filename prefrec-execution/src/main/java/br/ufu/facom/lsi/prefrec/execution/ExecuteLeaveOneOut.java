@@ -16,6 +16,7 @@ import br.ufu.facom.lsi.prefrec.cluster.Clusterer;
 import br.ufu.facom.lsi.prefrec.cluster.ClustererFactory;
 import br.ufu.facom.lsi.prefrec.cluster.apache.KMeansClusterer.CentroidStrategy;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
+import br.ufu.facom.lsi.prefrec.cluster.distance.MyPearsonCorrelationSimilarity;
 import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansImpl.KMeansBuilder;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.User;
@@ -27,6 +28,7 @@ import br.ufu.facom.lsi.prefrec.representation.impl.LeaveOneOutTesterRepresenter
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocial;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialAverage;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialThreshold;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.CentralityStrenghtTie;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.FriendshipStrenghtTie;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.InteractionStrenghtTie;
@@ -39,7 +41,7 @@ public class ExecuteLeaveOneOut {
 
 	public static void run(List<Long> usersId) throws Exception {
 		//int h=1;
-for(int h=1;h<=5;h++){
+for(int h=2;h<=3;h++){
 		for (Long currentUserId : usersId ) {
 			
 			Representer representer = RepresenterFacotry
@@ -49,7 +51,7 @@ for(int h=1;h<=5;h++){
 			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 					.getClusterBuilder(ClusterEnum.KMEANS);
 			Clusterer clusterer = clustererBuilder.clustersNumber(h)
-					.measure(new MyEuclideanDistance())
+					.measure(new MyPearsonCorrelationSimilarity())
 					.centroidStrategy(CentroidStrategy.AVERAGE).build();
 
 			// KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder)
@@ -87,9 +89,13 @@ for(int h=1;h<=5;h++){
 
 			//XPrefRec xprefrec = new XPrefRec(
 			 //agregator.getConcensualMatrixMap(), miner);
+			//XPrefRec xprefrec = new XPrefRecSocialThreshold(
+				//	agregator.getConcensualMatrixMap(), miner,
+					//new CentralityStrenghtTie(),0.0001);
+			
 			XPrefRec xprefrec = new XPrefRecSocialAverage(
-					agregator.getConcensualMatrixMap(), miner,
-					new InteractionStrenghtTie());
+				agregator.getConcensualMatrixMap(), miner,
+				new FriendshipStrenghtTie());
 
 			LeaveOneOutTesterRepresenter testerRepresenter = (LeaveOneOutTesterRepresenter) RepresenterFacotry
 					.getRepresenter(RepresenterEnum.LEAVE_ONE_OUT_TESTER);
@@ -127,7 +133,7 @@ for(int h=1;h<=5;h++){
 						}
 
 					} catch (Exception e) {
-						writeOutput(userId, new Float[] { -1f, -1f },h,ratedSize);
+						//writeOutput(userId, new Float[] { -1f, -1f },h,ratedSize);
 					}
 				}
 

@@ -56,7 +56,7 @@ public class XPrefRecSocialThreshold extends XPrefRecSocialAverage{
 				}
 			}
 						
-			if(strenghtSum > previous){//corrigir
+			if(strenghtSum > previous && strenghtSum!=0){//corrigir
 				previous = strenghtSum;
 				similarMatrix = key;
 			}

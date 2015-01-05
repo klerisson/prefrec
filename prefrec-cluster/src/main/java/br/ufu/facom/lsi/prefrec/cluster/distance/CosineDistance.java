@@ -18,14 +18,19 @@ public class CosineDistance implements DistanceMeasure {
 			// if p1[i]==0 or p2[i]==0 it doesn't use
 			if (p1[i] != -1 && p2[i] != -1) {
 				sum += (p1[i] * p2[i]);
-				sumP1 += FastMath.pow(p1[i], 2);
-				sumP2 += FastMath.pow(p2[i], 2);
-				qtderates++;
+				 qtderates++;
 			}
-		}
+			if (p1[i]!=-1){
+				sumP1 += FastMath.pow(p1[i], 2);
+			}
+			if (p2[i]!=-1){
+				sumP2 += FastMath.pow(p2[i], 2);
+			}
+			}
+		
 
-		return qtderates == 0 ? Double.MAX_VALUE : ((sum / (FastMath
-				.sqrt(sumP1) * FastMath.sqrt(sumP2))) / qtderates);
+		return qtderates == 0 ? Double.MAX_VALUE :(1/(sum / (FastMath
+				.sqrt(sumP1) * FastMath.sqrt(sumP2))));
 	}
 
 }

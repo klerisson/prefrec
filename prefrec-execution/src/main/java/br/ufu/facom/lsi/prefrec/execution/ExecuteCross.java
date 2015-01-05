@@ -16,7 +16,10 @@ import br.ufu.facom.lsi.prefrec.cluster.ClusterEnum;
 import br.ufu.facom.lsi.prefrec.cluster.Clusterer;
 import br.ufu.facom.lsi.prefrec.cluster.ClustererFactory;
 import br.ufu.facom.lsi.prefrec.cluster.apache.KMeansClusterer.CentroidStrategy;
+import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistance;
+import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistanceNormalized;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
+import br.ufu.facom.lsi.prefrec.cluster.distance.MyPearsonCorrelationSimilarity;
 import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansImpl.KMeansBuilder;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.User;
@@ -30,11 +33,14 @@ import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefR
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialThreshold;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.CentralityStrenghtTie;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.FriendshipStrenghtTie;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.InteractionStrenghtTie;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.MutualFriendsStrenghtTie;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.SimilarityStrenghtTie;
 
 public class ExecuteCross {
 
 	public static void run(int partitions) throws Exception {
-		for (int h = 1; h <= 5; h++) {
+		for (int h = 2; h <=3; h++) {
 			for (int i = 0; i < partitions; i++) {
 
 				UtilityMatrix utilityMatrix = null;
@@ -45,8 +51,12 @@ public class ExecuteCross {
 				KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 						.getClusterBuilder(ClusterEnum.KMEANS);
 				Clusterer clusterer = clustererBuilder.clustersNumber(h)
-						.measure(new MyEuclideanDistance())
+						.measure(new CosineDistanceNormalized())
 						.centroidStrategy(CentroidStrategy.AVERAGE).build();
+				
+				//Clusterer clusterer = clustererBuilder.clustersNumber(h)
+					//.measure(new MyEuclideanDistance())
+					//.centroidStrategy(CentroidStrategy.MAJORITY).build();
 
 				// KMeansPlusPlusBuilder clustererBuilder =
 				// (KMeansPlusPlusBuilder)
@@ -88,15 +98,15 @@ public class ExecuteCross {
 				}
 
 				// XPrefRec xprefrec = new XPrefRec(
-				// agregator.getConcensualMatrixMap(), miner);
+				 //agregator.getConcensualMatrixMap(), miner);
+
+				//XPrefRec xprefrec = new XPrefRecSocialThreshold(
+					//	agregator.getConcensualMatrixMap(), miner,
+						//new FriendshipStrenghtTie(),0.0001);
 
 				XPrefRec xprefrec = new XPrefRecSocialAverage(
-						agregator.getConcensualMatrixMap(), miner,
-						new FriendshipStrenghtTie());
-
-				// XPrefRec xprefrec = new XPrefRecSocialAverage(
-				// agregator.getConcensualMatrixMap(), miner,
-				// new CentralityStrenghtTie());
+				agregator.getConcensualMatrixMap(), miner,
+				 new FriendshipStrenghtTie());
 
 				// XPrefRec xprefrec = new XPrefRecSocialThreshold(
 				// agregator.getConcensualMatrixMap(), miner,
@@ -141,8 +151,8 @@ public class ExecuteCross {
 									}
 
 								} catch (Exception e) {
-									writeOutput(entry.getKey(), i, j,
-											new Float[] { -1f, -1f }, h);
+								// writeOutput(entry.getKey(), i, j,
+											//new Float[] { -1f, -1f }, h);
 								}
 							}
 						} catch (Exception e) {

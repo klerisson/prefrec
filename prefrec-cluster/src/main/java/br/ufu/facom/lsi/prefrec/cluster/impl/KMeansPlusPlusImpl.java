@@ -32,6 +32,7 @@ public class KMeansPlusPlusImpl extends Clusterer {
 	private List<CentroidCluster<DoublePoint>> clusters;
 
 	private KMeansPlusPlusImpl(KMeansPlusPlusBuilder builder) {
+		this.distance = builder.measure;
 		this.kMeansPlusPlus = new KMeansPlusPlusClusterer<DoublePoint>(builder.clustersNumber,
 				-1, builder.measure, new JDKRandomGenerator(),
 				EmptyClusterStrategy.LARGEST_VARIANCE);
@@ -50,7 +51,8 @@ public class KMeansPlusPlusImpl extends Clusterer {
 			doublePointList.add(dp);
 		}
 		List<CentroidCluster<DoublePoint>> clustersKmeans = kMeansPlusPlus.cluster(doublePointList);
-		return clusterVectorToClusterUser(clustersKmeans, doublePointMap);
+		this.clusterMap = clusterVectorToClusterUser(clustersKmeans, doublePointMap); 
+		return this.clusterMap;
 	}
 
 	/* (non-Javadoc)

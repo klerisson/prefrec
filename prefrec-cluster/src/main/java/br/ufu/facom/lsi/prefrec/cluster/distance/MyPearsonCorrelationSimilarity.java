@@ -27,7 +27,7 @@ public class MyPearsonCorrelationSimilarity implements DistanceMeasure {
 			}
 		}
 		if (qtdeRates == 0) {
-			return (Double.MAX_VALUE);
+			return (100.00);
 		} else {
 			avgP1=avgP1/qtdeRates;
 			avgP2=avgP2/qtdeRates;
@@ -38,7 +38,14 @@ public class MyPearsonCorrelationSimilarity implements DistanceMeasure {
 					 sumDen2 += FastMath.pow((p2[i] - avgP2), 2);
 				}
 			}
-			return (1- (sumNum/(FastMath.sqrt(sumDen1)*FastMath.sqrt(sumDen2))));
+			
+			if(sumNum!=0 && sumDen1!=0 && sumDen2!=0){
+				//System.out.println("NUM:"+sumNum+"Den1:"+FastMath.sqrt(sumDen1)+"Den2:"+FastMath.sqrt(sumDen2));
+				//System.out.println(1- (sumNum/(FastMath.sqrt(sumDen1)*FastMath.sqrt(sumDen2))));
+				return (1- (sumNum/(FastMath.sqrt(sumDen1)*FastMath.sqrt(sumDen2))));
+			}
+			else
+				return(0);
 		}
 	}
 

@@ -74,9 +74,9 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 				uis.setDate(rs.getTimestamp("dataavaliacao"));
 
 				try {
-					uis.setNota(Integer.valueOf(rs.getString("nota")));
+					uis.setNota(Double.valueOf(rs.getString("nota")));
 				} catch (NumberFormatException nfe) {
-					uis.setNota(0);
+					uis.setNota(0.0);
 				}
 				this.addToUniqueUsers(uis.getUserId());
 				this.addToUniqueItens(uis.getItemId());
@@ -146,13 +146,13 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 				PreparedStatement preparedStatement = conn
 						.prepareStatement(sql)) {
 
-			TreeMap<Integer, List<Integer[]>> userFolders = stratifiedMatrix
+			TreeMap<Integer, List<Double[]>> userFolders = stratifiedMatrix
 					.getPartitions();
-			TreeMap<Integer, List<Integer[]>> itemFolders = stratifiedMatrix
+			TreeMap<Integer, List<Double[]>> itemFolders = stratifiedMatrix
 					.getPartitionsFromItem();
 			Long[] usersId = stratifiedMatrix.getUsersId();
 			Long[] itemsId = stratifiedMatrix.getItemsId();
-			Integer[][] ratings = stratifiedMatrix.getRatings();
+			Double[][] ratings = stratifiedMatrix.getRatings();
 
 			Iterator<Integer> userFolderIterator = userFolders
 					.navigableKeySet().iterator();
@@ -177,7 +177,7 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 					int itemOnFold = itemFolders.get(currentItemFold).size();
 					preparedStatement.setLong(1, usersId[i]); // userid
 					preparedStatement.setLong(2, itemsId[j]); // itemid
-					preparedStatement.setLong(3, ratings[i][j]); // rate
+					preparedStatement.setDouble(3, ratings[i][j]); // rate
 					preparedStatement.setLong(4, currentUserFold); // folduserid
 					preparedStatement.setLong(5, currentItemFold); // folditemid
 					preparedStatement.executeUpdate();
@@ -245,9 +245,9 @@ public class UserItemScorerList extends ArrayList<UserItemScorer> {
 	 *            the user.
 	 * @return
 	 */
-	public Map<Integer, Integer> getItemScoreByUserId(Long userId) {
+	public Map<Integer, Double> getItemScoreByUserId(Long userId) {
 
-		Map<Integer, Integer> itemScore = new LinkedHashMap<>();
+		Map<Integer, Double> itemScore = new LinkedHashMap<>();
 		for (UserItemScorer uis : this) {
 			if (uis.getUserId().equals(userId)) {
 				itemScore.put(uis.getItemId().intValue(), uis.getNota());

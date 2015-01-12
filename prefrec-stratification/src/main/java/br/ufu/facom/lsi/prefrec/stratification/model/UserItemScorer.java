@@ -7,7 +7,7 @@ public class UserItemScorer implements Serializable{
 
 	private static final long serialVersionUID = 1223120191745462536L;
 
-	private int nota;
+	private Double nota;
 
 	private Long itemId;
 
@@ -15,11 +15,11 @@ public class UserItemScorer implements Serializable{
 	
 	private Date date;
 
-	public int getNota() {
+	public Double getNota() {
 		return nota;
 	}
 
-	public void setNota(int nota) {
+	public void setNota(double nota) {
 		this.nota = nota;
 	}
 

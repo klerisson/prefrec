@@ -46,7 +46,7 @@ public class CosineDistanceNormalized implements DistanceMeasure {
 			}
 		
 
-		return qtdeRates == 0 ? Double.MAX_VALUE :(1-(sum / (FastMath
+		return qtdeRates == 0 ? 100.00 :(1-(sum / (FastMath
 				.sqrt(sumP1) * FastMath.sqrt(sumP2))));
 	}
 

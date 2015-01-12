@@ -15,6 +15,7 @@ import br.ufu.facom.lsi.prefrec.cluster.ClusterEnum;
 import br.ufu.facom.lsi.prefrec.cluster.Clusterer;
 import br.ufu.facom.lsi.prefrec.cluster.ClustererFactory;
 import br.ufu.facom.lsi.prefrec.cluster.apache.KMeansClusterer.CentroidStrategy;
+import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistanceNormalized;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyPearsonCorrelationSimilarity;
 import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansImpl.KMeansBuilder;
@@ -41,7 +42,7 @@ public class ExecuteLeaveOneOut {
 
 	public static void run(List<Long> usersId) throws Exception {
 		//int h=1;
-for(int h=2;h<=3;h++){
+for(int h=3;h<=3;h++){
 		for (Long currentUserId : usersId ) {
 			
 			Representer representer = RepresenterFacotry
@@ -66,7 +67,8 @@ for(int h=2;h<=3;h++){
 				System.out.println(cluster.get(id).size());
 
 			}
-
+			double silhouete=clusterer.silhouetteCalc();
+			System.out.println(silhouete);
 			Agregator agregator = new Agregator(cluster, utilityMatrix);
 			agregator.execute();
 
@@ -87,15 +89,15 @@ for(int h=2;h<=3;h++){
 				throw e1;
 			}
 
-			//XPrefRec xprefrec = new XPrefRec(
-			 //agregator.getConcensualMatrixMap(), miner);
+			XPrefRec xprefrec = new XPrefRec(
+			 agregator.getConcensualMatrixMap(), miner);
 			//XPrefRec xprefrec = new XPrefRecSocialThreshold(
 				//	agregator.getConcensualMatrixMap(), miner,
-					//new CentralityStrenghtTie(),0.0001);
+					//new FriendshipStrenghtTie(),0.0001);
 			
-			XPrefRec xprefrec = new XPrefRecSocialAverage(
-				agregator.getConcensualMatrixMap(), miner,
-				new FriendshipStrenghtTie());
+			//XPrefRec xprefrec = new XPrefRecSocialAverage(
+				//agregator.getConcensualMatrixMap(), miner,
+				//new CentralityStrenghtTie());
 
 			LeaveOneOutTesterRepresenter testerRepresenter = (LeaveOneOutTesterRepresenter) RepresenterFacotry
 					.getRepresenter(RepresenterEnum.LEAVE_ONE_OUT_TESTER);
@@ -117,16 +119,16 @@ for(int h=2;h<=3;h++){
 				if (itemsIdToRate != null && itemsIdToRate.size() > 1) {
 					try {
 
-						Float[] precisionRecall = xprefrec.run(userId,
-								testersPrefMatrixMap.get(userId),
-								itemsIdToRate, null, testerUtilityMatrix);
+						//Float[] precisionRecall = xprefrec.run(userId,
+							//	testersPrefMatrixMap.get(userId),
+								//itemsIdToRate, null, testerUtilityMatrix);
 
 						// Find consensual matrix by centroid
-						// Float[] precisionRecall =
-						// xprefrec.run(entry.getKey()
-						// , entry.getValue(),
-						// itemIdToRate, clusterer.getClusterCenters(),
-						// testerUtilityMatrix);
+						 Float[] precisionRecall =
+						 xprefrec.run(userId,
+						testersPrefMatrixMap.get(userId),
+						itemsIdToRate, clusterer.getClusterCenters(),
+						 testerUtilityMatrix);
 
 						if (precisionRecall != null) {
 							writeOutput(userId, precisionRecall,h,ratedSize);
@@ -152,10 +154,10 @@ for(int h=2;h<=3;h++){
 					.append(";").append(precisionRecall[1])
 					.append(System.lineSeparator());
 
-			if (!Files.exists(Paths.get("./output"+fileId+ratedS+".cvs"))) {
-				Files.createFile(Paths.get("./output"+fileId+ratedS+".cvs"));
+			if (!Files.exists(Paths.get("./output-"+fileId+"-"+ratedS+".cvs"))) {
+				Files.createFile(Paths.get("./output-"+fileId+"-"+ratedS+".cvs"));
 			}
-			Files.write(Paths.get("./output"+fileId+ratedS+".cvs"), msg.toString().getBytes(),
+			Files.write(Paths.get("./output-"+fileId+"-"+ratedS+".cvs"), msg.toString().getBytes(),
 					StandardOpenOption.APPEND);
 
 		} catch (IOException e) {

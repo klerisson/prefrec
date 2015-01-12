@@ -6,9 +6,12 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
+import org.apache.commons.math3.util.FastMath;
 
 import prefdb.model.PrefDatabase;
+import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistanceNormalized;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
+import br.ufu.facom.lsi.prefrec.cluster.distance.MyPearsonCorrelationSimilarity;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.Item;
 import br.ufu.facom.lsi.prefrec.model.User;
@@ -30,7 +33,7 @@ public class XPrefRec {
 		super();
 		this.miner = miner;
 		this.concensualMatrixMap = concensualMatrixMap;
-		this.distanceMeasure = new MyEuclideanDistance();
+		this.distanceMeasure = new MyPearsonCorrelationSimilarity();
 	}
 
 	public Float[] run(Long userId, Double[][] itemItem,
@@ -63,12 +66,13 @@ public class XPrefRec {
 
 		double[] itemItemVector = matrixToVector(itemItem);
 		Double[][] result = null;
-		double distance = Double.MAX_VALUE;
+		double distance = 100;
 		for (Double[][] concensualTemp : this.concensualMatrixMap.keySet()) {
 
 			double[] concensualVector = matrixToVector(concensualTemp);
 			double currentDistance = this.distanceMeasure.compute(
 					itemItemVector, concensualVector);
+			//System.out.println(currentDistance);
 			if (currentDistance <= distance) {
 				result = concensualTemp;
 				distance = currentDistance;

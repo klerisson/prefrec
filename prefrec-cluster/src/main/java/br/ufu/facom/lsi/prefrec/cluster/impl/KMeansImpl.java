@@ -33,6 +33,8 @@ public class KMeansImpl extends Clusterer{
 	private Map<Long, Double[]> clusterCenters;
 
 	private KMeansImpl(KMeansBuilder builder) {
+		super();
+		this.distance = builder.measure;
 		this.kMeans = new KMeansClusterer<DoublePoint>(builder.clustersNumber,
 				-1, builder.measure, new JDKRandomGenerator(),
 				EmptyClusterStrategy.LARGEST_VARIANCE, builder.centroidStrategy);
@@ -49,7 +51,8 @@ public class KMeansImpl extends Clusterer{
 
 		List<CentroidCluster<DoublePoint>> clustersKmeans = kMeans.cluster(doublePointList);
 		fetchClustersCenter(clustersKmeans);
-		return clusterVectorToClusterUser(clustersKmeans, doublePointMap);
+		this.clusterMap = clusterVectorToClusterUser(clustersKmeans, doublePointMap);
+		return this.clusterMap;
 	}
 
 	/**

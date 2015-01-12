@@ -51,7 +51,7 @@ public class ExecuteCross {
 				KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 						.getClusterBuilder(ClusterEnum.KMEANS);
 				Clusterer clusterer = clustererBuilder.clustersNumber(h)
-						.measure(new CosineDistanceNormalized())
+						.measure(new MyEuclideanDistance())
 						.centroidStrategy(CentroidStrategy.AVERAGE).build();
 				
 				//Clusterer clusterer = clustererBuilder.clustersNumber(h)
@@ -75,6 +75,7 @@ public class ExecuteCross {
 				System.out.println();
 				System.out.println(i);
 				System.out.println();
+				 System.out.println(clusterer.silhouetteCalc());
 
 				Agregator agregator = new Agregator(cluster, utilityMatrix);
 				agregator.execute();
@@ -97,16 +98,16 @@ public class ExecuteCross {
 					throw e1;
 				}
 
-				// XPrefRec xprefrec = new XPrefRec(
-				 //agregator.getConcensualMatrixMap(), miner);
+				 XPrefRec xprefrec = new XPrefRec(
+				 agregator.getConcensualMatrixMap(), miner);
 
 				//XPrefRec xprefrec = new XPrefRecSocialThreshold(
 					//	agregator.getConcensualMatrixMap(), miner,
-						//new FriendshipStrenghtTie(),0.0001);
+						//new MutualFriendsStrenghtTie(),0.01);
 
-				XPrefRec xprefrec = new XPrefRecSocialAverage(
-				agregator.getConcensualMatrixMap(), miner,
-				 new FriendshipStrenghtTie());
+				//XPrefRec xprefrec = new XPrefRecSocialAverage(
+				//agregator.getConcensualMatrixMap(), miner,
+				 //new FriendshipStrenghtTie());
 
 				// XPrefRec xprefrec = new XPrefRecSocialThreshold(
 				// agregator.getConcensualMatrixMap(), miner,
@@ -132,18 +133,18 @@ public class ExecuteCross {
 											.intValue(), j);
 							if (itemIdToRate != null && itemIdToRate.size() > 1) {
 								try {
-									Float[] precisionRecall = xprefrec.run(
-											entry.getKey(), entry.getValue(),
-											itemIdToRate, null,
-											testerUtilityMatrix);
+									//Float[] precisionRecall = xprefrec.run(
+										//	entry.getKey(), entry.getValue(),
+											//itemIdToRate, null,
+											//testerUtilityMatrix);
 
 									// Find consensual matrix by centroid
-									// Float[] precisionRecall =
-									// xprefrec.run(entry.getKey()
-									// , entry.getValue(),
-									// itemIdToRate,
-									// clusterer.getClusterCenters(),
-									// testerUtilityMatrix);
+									 Float[] precisionRecall =
+									 xprefrec.run(entry.getKey()
+									 , entry.getValue(),
+									 itemIdToRate,
+									 clusterer.getClusterCenters(),
+									 testerUtilityMatrix);
 
 									if (precisionRecall != null) {
 										writeOutput(entry.getKey(), i, j,

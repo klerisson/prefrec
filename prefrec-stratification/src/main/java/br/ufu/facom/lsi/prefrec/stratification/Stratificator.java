@@ -29,7 +29,7 @@ public class Stratificator {
 	private double[] usersOnRange;
 
 	private Integer rangeElementQt;
-	private Integer[][] ratings;
+	private Double[][] ratings;
 	private StratifiedMatrix stratifiedMatrix;
 	private StratifiedMatrix stratifiedMatrixByUser;
 
@@ -43,27 +43,27 @@ public class Stratificator {
 				new Long[uisList.getUniqueUsers().size()]);
 		
 		this.usersMean = new double[this.users.length];
-		this.rangeUserCounter = new double[4];
-		this.usersPercentile = new double[4];
-		this.usersOnRange = new double[4];
+		this.rangeUserCounter = new double[5];
+		this.usersPercentile = new double[5];
+		this.usersOnRange = new double[5];
 		this.itens = uisList.getUniqueItens().toArray(
 				new Long[uisList.getUniqueItens().size()]);
 		this.itensMean = new double[this.itens.length];
-		this.rangeItemCounter = new double[4];
-		this.itensPercentile = new double[4];
-		this.itensOnRange = new double[4];
-		this.ratings = new Integer[this.users.length][this.itens.length];
+		this.rangeItemCounter = new double[5];
+		this.itensPercentile = new double[5];
+		this.itensOnRange = new double[5];
+		this.ratings = new Double[this.users.length][this.itens.length];
 		this.usedItens = new ArrayList<Integer>();
 
 		// Initialize ratings matrix
 		for (int i = 0; i < this.users.length; i++) {
 			for (int j = 0; j < this.itens.length; j++) {
-				this.ratings[i][j] = -1;
+				this.ratings[i][j] = -1.0;
 			}
 		}
 
 		for (int i = 0; i < this.users.length; i++) {
-			Map<Integer, Integer> userScores = uisList
+			Map<Integer, Double> userScores = uisList
 					.getItemScoreByUserId(this.users[i]);
 			for (Integer idx : userScores.keySet()) {
 				int itemIndex = this.findItemIndex(idx);
@@ -111,7 +111,7 @@ public class Stratificator {
 		}
 		
 		if(this.usedItens.size() < this.itens.length){
-			Map<Integer, Integer[]> restOfColumns = new HashMap<Integer, Integer[]>();
+			Map<Integer, Double[]> restOfColumns = new HashMap<Integer, Double[]>();
 			for(int i = 0; i < this.itens.length; i ++){
 				if(!this.usedItens.contains(i)){
 					restOfColumns.put(this.itens[i].intValue(), getColumnFrom(i, this.ratings));
@@ -129,8 +129,8 @@ public class Stratificator {
 		new UserItemScorerList().saveStratiefMatrix(this.stratifiedMatrixByUser);
 	}
 
-	private Integer[] getColumnFrom(int column, Integer[][] ratings) {
-		Integer[] result = new Integer[this.users.length];
+	private Double[] getColumnFrom(int column, Double[][] ratings) {
+		Double[] result = new Double[this.users.length];
 		for(int i = 0; i < this.users.length; i++){
 			result[i] = ratings[i][column];
 		}
@@ -142,18 +142,21 @@ public class Stratificator {
 
 		switch (range) {
 		case 0:
-			fillWithAverage(itensOnRange, 2, stratum);
+			fillWithAverage(itensOnRange, 1, stratum);
 			break;
 
 		case 1:
-			fillWithAverage(itensOnRange, 3, stratum);
+			fillWithAverage(itensOnRange, 2, stratum);
 			break;
 
 		case 2:
-			fillWithAverage(itensOnRange, 4, stratum);
+			fillWithAverage(itensOnRange, 3, stratum);
 			break;
 
 		case 3:
+			fillWithAverage(itensOnRange, 4, stratum);
+			break;
+		case 4:
 			fillWithAverage(itensOnRange, 5, stratum);
 			break;
 		}
@@ -167,7 +170,7 @@ public class Stratificator {
 			if ((!this.usedItens.contains(i))
 					&& (this.itensMean[i] >= (newRange - 1))
 					&& (this.itensMean[i] < newRange)) {
-				Integer[] col = new Integer[this.ratings.length];
+				Double[] col = new Double[this.ratings.length];
 				for (int j = 0; j < this.ratings.length; j++) {
 					col[j] = this.ratings[j][i];
 				}
@@ -180,14 +183,16 @@ public class Stratificator {
 
 	private void classifyItemMean(double d) {
 		if (d >= 4) {
-			this.rangeItemCounter[3]++;
+			this.rangeItemCounter[4]++;
 		} else if (d >= 3) {
-			this.rangeItemCounter[2]++;
+			this.rangeItemCounter[3]++;
 		} else if (d >= 2) {
+			this.rangeItemCounter[2]++;
+		} else if(d>=1){
 			this.rangeItemCounter[1]++;
-		} else {
-			this.rangeItemCounter[0]++;
 		}
+		else
+			this.rangeItemCounter[0]++;
 	}
 
 	private int findItemIndex(Integer idx) throws Exception {
@@ -237,7 +242,7 @@ public class Stratificator {
 		}
 		
 		if(this.usedItens.size() < this.users.length){
-			Map<Integer, Integer[]> restOfRows = new HashMap<Integer, Integer[]>();
+			Map<Integer, Double[]> restOfRows = new HashMap<Integer, Double[]>();
 			for(int i = 0; i < this.users.length; i ++){
 				if(!this.usedItens.contains(i)){
 					restOfRows.put(this.users[i].intValue(), this.stratifiedMatrix.getRatings()[i]);
@@ -254,18 +259,21 @@ public class Stratificator {
 			double usersOnRange) {
 		switch (range) {
 		case 0:
-			fillWithAverageByUser(usersOnRange, 2, stratum);
+			fillWithAverageByUser(usersOnRange, 1, stratum);
 			break;
 
 		case 1:
-			fillWithAverageByUser(usersOnRange, 3, stratum);
+			fillWithAverageByUser(usersOnRange, 2, stratum);
 			break;
 
 		case 2:
-			fillWithAverageByUser(usersOnRange, 4, stratum);
+			fillWithAverageByUser(usersOnRange, 3, stratum);
 			break;
 
 		case 3:
+			fillWithAverageByUser(usersOnRange, 4, stratum);
+			break;
+		case 4:
 			fillWithAverageByUser(usersOnRange, 5, stratum);
 			break;
 		}
@@ -282,7 +290,7 @@ public class Stratificator {
 					&& (this.usersMean[i] >= (newRange - 1))
 					&& (this.usersMean[i] < newRange)) {
 			
-				Integer[] row = new Integer[this.itens.length];
+				Double[] row = new Double[this.itens.length];
 				for (int j = 0; j < this.itens.length; j++) {
 					row[j] = this.stratifiedMatrix.getRatings()[i][j];
 				}
@@ -295,14 +303,16 @@ public class Stratificator {
 
 	private void classifyUserMean(double mean) {
 		if (mean >= 4) {
-			this.rangeUserCounter[3]++;
+			this.rangeUserCounter[4]++;
 		} else if (mean >= 3) {
-			this.rangeUserCounter[2]++;
+			this.rangeUserCounter[3]++;
 		} else if (mean >= 2) {
+			this.rangeUserCounter[2]++;
+		} else if (mean >= 1){
 			this.rangeUserCounter[1]++;
-		} else {
-			this.rangeUserCounter[0]++;
 		}
+		else
+			this.rangeUserCounter[0]++;
 	}
 
 	public StratifiedMatrix getStratifiedMatrix() {

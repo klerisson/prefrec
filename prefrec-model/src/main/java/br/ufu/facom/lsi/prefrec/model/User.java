@@ -22,7 +22,13 @@ public class User implements Serializable {
 	private Map<User, Double> interactionMap;
 
 	private Map<User, Double> similarityMap;
-	
+
+	private double silhouetteIntraCluster;
+
+	private double silhouetteExtraClusters;
+
+	private double silhouette;
+
 	public User(Long userId) {
 		super();
 		this.id = userId;
@@ -48,19 +54,17 @@ public class User implements Serializable {
 		this.friends = friends;
 	}
 
-	
-	
 	public User(Long id, List<Item> items, List<User> friends,
-			Map<User, Double> centralityMap,Map<User, Double> mutualFriendsMap,Map<User, 
-			Double> interactionMap ,Map<User, 
-			Double> similarityMap) {
+			Map<User, Double> centralityMap,
+			Map<User, Double> mutualFriendsMap,
+			Map<User, Double> interactionMap, Map<User, Double> similarityMap) {
 		this(id, items, friends);
 		this.centralityMap = centralityMap;
 		this.mutualFriendsMap = mutualFriendsMap;
 		this.interactionMap = interactionMap;
 		this.similarityMap = similarityMap;
 	}
-	
+
 	/**
 	 * @param id
 	 * @param items
@@ -68,26 +72,26 @@ public class User implements Serializable {
 	 * @param centralityMap
 	 */
 	public User(Long id, List<Item> items, List<User> friends,
-			Map<User, Double> centralityMap,Map<User, Double> mutualFriendsMap,Map<User, 
-			Double> interactionMap ) {
+			Map<User, Double> centralityMap,
+			Map<User, Double> mutualFriendsMap, Map<User, Double> interactionMap) {
 		this(id, items, friends);
 		this.centralityMap = centralityMap;
 		this.mutualFriendsMap = mutualFriendsMap;
 		this.interactionMap = interactionMap;
 	}
-	
+
 	public User(Long id, List<Item> items, List<User> friends,
-			Map<User, Double> centralityMap,Map<User, Double> mutualFriendsMap) {
+			Map<User, Double> centralityMap, Map<User, Double> mutualFriendsMap) {
 		this(id, items, friends);
 		this.centralityMap = centralityMap;
 		this.mutualFriendsMap = mutualFriendsMap;
 	}
+
 	public User(Long id, List<Item> items, List<User> friends,
 			Map<User, Double> centralityMap) {
 		this(id, items, friends);
 		this.centralityMap = centralityMap;
 	}
-
 
 	/**
 	 * @return the id
@@ -124,22 +128,59 @@ public class User implements Serializable {
 	public Map<User, Double> getCentralityMap() {
 		return centralityMap;
 	}
-	
+
 	public Map<User, Double> getMutualFriendsMap() {
-		// TODO Auto-generated method stub
 		return mutualFriendsMap;
 	}
+
 	public Map<User, Double> getInteractionMap() {
-		// TODO Auto-generated method stub
 		return interactionMap;
 	}
-	
+
 	public Map<User, Double> getSimilarityMap() {
-		// TODO Auto-generated method stub
 		return similarityMap;
 	}
 
-	/* (non-Javadoc)
+	public void setSilhouetteIntraCluster(double dist) {
+		this.silhouetteIntraCluster = dist;
+	}
+
+	public double getSilhoutteIntraCluster() {
+		return this.silhouetteIntraCluster;
+	}
+
+	/**
+	 * @return the silhouetteExtraClusters
+	 */
+	public double getSilhouetteExtraClusters() {
+		return silhouetteExtraClusters;
+	}
+
+	/**
+	 * @param setSilhouetteExtraClusters
+	 *            the silhouetteIntraClusters to set
+	 */
+	public void setSilhouetteExtraClusters(double silhouetteExtraClusters) {
+		this.silhouetteExtraClusters = silhouetteExtraClusters;
+	}
+
+	public double getSilhouette(){
+		return this.silhouette;
+	}
+	
+	/**
+	 * Coef. Silhueta (t) = (bt – at ) / max(at , bt )
+	 */
+	public void calcSilhouette() {
+		//System.out.println("Extra"+this.silhouetteExtraClusters+"-Intra"+this.silhouetteIntraCluster);
+		this.silhouette = (this.silhouetteExtraClusters - this.silhouetteIntraCluster)
+				/ Math.max(this.silhouetteIntraCluster,
+						this.silhouetteExtraClusters);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -150,7 +191,9 @@ public class User implements Serializable {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -170,10 +213,4 @@ public class User implements Serializable {
 		return true;
 	}
 
-
-
-	
-
-	
-	
 }

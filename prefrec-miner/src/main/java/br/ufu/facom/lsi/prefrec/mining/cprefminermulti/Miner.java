@@ -73,13 +73,14 @@ public class Miner {
 		ArrayList<String> attribsList = new ArrayList<>();
 		attribsList.addAll(Arrays.asList(attributes));
 
-		Integer[] maxMult = { 3, 3, 6, 4, 1,4, 0 };//director,genre,language,star,year,country,user
+		//Integer[] maxMult = { 3, 3, 6, 4, 1,4, 0 };//director,genre,language,star,year,country,user
+		Integer[] maxMult = { 5, 3, 6, 4, 1,6, 0 };
 
 		Database d = new Database("../miningoutput/Fbprefrec/", attribsList, "user.cpm",
 				maxMult, ',');
 		Map<Key, FullTuple> tuples = d.getMapFullTuples();
-		//for(Map.Entry<Key, FullTuple> entry : tuples.entrySet()) {
-			//System.out.println(entry.getValue().toString());
+//		for(Map.Entry<Key, FullTuple> entry : tuples.entrySet()) {
+	//		System.out.println(entry.getValue().toString());
 		//}
 		return tuples;
 	}

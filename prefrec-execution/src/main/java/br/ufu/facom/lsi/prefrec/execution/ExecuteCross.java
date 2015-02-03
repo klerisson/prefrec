@@ -21,6 +21,7 @@ import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistanceNormalized;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyPearsonCorrelationSimilarity;
 import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansImpl.KMeansBuilder;
+import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansPlusPlusImpl.KMeansPlusPlusBuilder;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.User;
 import br.ufu.facom.lsi.prefrec.model.UtilityMatrix;
@@ -40,7 +41,7 @@ import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.streng
 public class ExecuteCross {
 
 	public static void run(int partitions) throws Exception {
-		for (int h = 2; h <=3; h++) {
+		for (int h=1; h <=7; h++) {
 			for (int i = 0; i < partitions; i++) {
 
 				UtilityMatrix utilityMatrix = null;
@@ -50,7 +51,7 @@ public class ExecuteCross {
 
 				KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 						.getClusterBuilder(ClusterEnum.KMEANS);
-				Clusterer clusterer = clustererBuilder.clustersNumber(h)
+				Clusterer clusterer = clustererBuilder.clustersNumber(2)
 						.measure(new MyEuclideanDistance())
 						.centroidStrategy(CentroidStrategy.AVERAGE).build();
 				
@@ -59,11 +60,10 @@ public class ExecuteCross {
 					//.centroidStrategy(CentroidStrategy.MAJORITY).build();
 
 				// KMeansPlusPlusBuilder clustererBuilder =
-				// (KMeansPlusPlusBuilder)
-				// ClustererFactory
-				// .getClusterBuilder(ClusterEnum.KMEANS_PLUS_PLUS);
-				// Clusterer clusterer = clustererBuilder.clustersNumber(4)
-				// .measure(new MyEuclideanDistance()).build();
+				 //(KMeansPlusPlusBuilder)
+				 //ClustererFactory.getClusterBuilder(ClusterEnum.KMEANS_PLUS_PLUS);
+				//Clusterer clusterer = clustererBuilder.clustersNumber(h)
+			    //.measure(new MyEuclideanDistance()).build();
 
 				Map<Long, List<User>> cluster = clusterer
 						.cluster(utilityMatrix);
@@ -75,8 +75,8 @@ public class ExecuteCross {
 				System.out.println();
 				System.out.println(i);
 				System.out.println();
-				 System.out.println(clusterer.silhouetteCalc());
-
+				// System.out.println(clusterer.silhouetteCalc());
+				//writeSilhouette(i,clusterer.silhouetteCalc(),h);
 				Agregator agregator = new Agregator(cluster, utilityMatrix);
 				agregator.execute();
 
@@ -98,16 +98,16 @@ public class ExecuteCross {
 					throw e1;
 				}
 
-				 XPrefRec xprefrec = new XPrefRec(
-				 agregator.getConcensualMatrixMap(), miner);
+				//XPrefRec xprefrec = new XPrefRec(
+				//agregator.getConcensualMatrixMap(), miner);
 
-				//XPrefRec xprefrec = new XPrefRecSocialThreshold(
-					//	agregator.getConcensualMatrixMap(), miner,
-						//new MutualFriendsStrenghtTie(),0.01);
+				XPrefRec xprefrec = new XPrefRecSocialThreshold(
+					agregator.getConcensualMatrixMap(), miner,
+						new MutualFriendsStrenghtTie(),0.1*h);
 
 				//XPrefRec xprefrec = new XPrefRecSocialAverage(
 				//agregator.getConcensualMatrixMap(), miner,
-				 //new FriendshipStrenghtTie());
+				 //new SimilarityStrenghtTie());
 
 				// XPrefRec xprefrec = new XPrefRecSocialThreshold(
 				// agregator.getConcensualMatrixMap(), miner,
@@ -147,6 +147,7 @@ public class ExecuteCross {
 									 testerUtilityMatrix);
 
 									if (precisionRecall != null) {
+										//System.out.println(precisionRecall[0]+precisionRecall[1]);
 										writeOutput(entry.getKey(), i, j,
 												precisionRecall, h);
 									}
@@ -186,4 +187,24 @@ public class ExecuteCross {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void writeSilhouette(int userFoldId, double silhouete,int h) {
+
+		try {
+
+			StringBuilder msg = new StringBuilder();
+			msg.append(userFoldId).append(";").append(silhouete)
+					.append(System.lineSeparator());
+
+			if (!Files.exists(Paths.get("./silhouete" + h+ ".cvs"))) {
+				Files.createFile(Paths.get("./silhouete" + h+ ".cvs"));
+			}
+			Files.write(Paths.get("./silhouete" + h + ".cvs"), msg.toString()
+					.getBytes(), StandardOpenOption.APPEND);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

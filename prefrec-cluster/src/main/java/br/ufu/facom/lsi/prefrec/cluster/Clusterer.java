@@ -133,16 +133,19 @@ public abstract class Clusterer {
 		while (it.hasNext()) {
 			User current = it.next();
 			double dist = 0.0;
+			//double minDist = 100.0;
 			for (User other : others) {
 				if(other.equals(current)){
 					continue;
 				}
+				
 				dist += this.distance.compute(ArrayUtils.toPrimitive(current
 						.getItemsRateDoubleArray()), ArrayUtils
 						.toPrimitive(other.getItemsRateDoubleArray()));
 			}
 			//System.out.println(dist);
 			current.setSilhouetteExtraClusters(dist/others.size());
+			//current.setSilhouetteExtraClusters(minDist);
 		}
 	}
 

@@ -43,9 +43,9 @@ public class PreferenceMatrix {
 					} else if (ratings != null) {
 						double score = (ratings[0] / ratings[1])
 								/ ((ratings[0] / ratings[1]) + 1);
-						BigDecimal scoreR = new BigDecimal(score).setScale(3,
-								RoundingMode.HALF_EVEN);
-						rm[rowId][columnId] = scoreR.doubleValue();
+						//BigDecimal scoreR = new BigDecimal(score).setScale(3,
+							//	RoundingMode.HALF_EVEN);
+						rm[rowId][columnId] = score;
 					}
 					columnId++;
 				}

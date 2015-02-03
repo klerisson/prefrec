@@ -8,7 +8,6 @@
 	<name>prefrec-all</name>
 	<modules>
 		<module>prefrec-model</module>
-		<module>prefrec-dao</module>
 		<module>prefrec-representation</module>
 		<module>prefrec-cluster</module>
 		<module>prefrec-execution</module>

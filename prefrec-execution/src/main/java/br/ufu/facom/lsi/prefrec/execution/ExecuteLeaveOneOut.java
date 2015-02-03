@@ -42,7 +42,7 @@ public class ExecuteLeaveOneOut {
 
 	public static void run(List<Long> usersId) throws Exception {
 		//int h=1;
-for(int h=3;h<=3;h++){
+for(int h=2;h<=5;h++){
 		for (Long currentUserId : usersId ) {
 			
 			Representer representer = RepresenterFacotry
@@ -52,7 +52,7 @@ for(int h=3;h<=3;h++){
 			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 					.getClusterBuilder(ClusterEnum.KMEANS);
 			Clusterer clusterer = clustererBuilder.clustersNumber(h)
-					.measure(new MyPearsonCorrelationSimilarity())
+					.measure(new CosineDistanceNormalized())
 					.centroidStrategy(CentroidStrategy.AVERAGE).build();
 
 			// KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder)
@@ -89,11 +89,11 @@ for(int h=3;h<=3;h++){
 				throw e1;
 			}
 
-			XPrefRec xprefrec = new XPrefRec(
-			 agregator.getConcensualMatrixMap(), miner);
-			//XPrefRec xprefrec = new XPrefRecSocialThreshold(
-				//	agregator.getConcensualMatrixMap(), miner,
-					//new FriendshipStrenghtTie(),0.0001);
+			//XPrefRec xprefrec = new XPrefRec(
+			 //agregator.getConcensualMatrixMap(), miner);
+			XPrefRec xprefrec = new XPrefRecSocialThreshold(
+					agregator.getConcensualMatrixMap(), miner,
+					new MutualFriendsStrenghtTie(),0.001);
 			
 			//XPrefRec xprefrec = new XPrefRecSocialAverage(
 				//agregator.getConcensualMatrixMap(), miner,

@@ -9,6 +9,7 @@ import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.util.FastMath;
 
 import prefdb.model.PrefDatabase;
+import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistance;
 import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistanceNormalized;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
 import br.ufu.facom.lsi.prefrec.cluster.distance.MyPearsonCorrelationSimilarity;
@@ -33,7 +34,7 @@ public class XPrefRec {
 		super();
 		this.miner = miner;
 		this.concensualMatrixMap = concensualMatrixMap;
-		this.distanceMeasure = new MyPearsonCorrelationSimilarity();
+		this.distanceMeasure = new  MyEuclideanDistance();
 	}
 
 	public Float[] run(Long userId, Double[][] itemItem,
@@ -86,7 +87,7 @@ public class XPrefRec {
 
 		User user = testerUtilityMatrix.getUserItemList(userId);
 		Double[][] result = null;
-		double distance = Double.MAX_VALUE;
+		double distance = 100;//Double.MAX_VALUE;
 		for(int i = 0; i < clusterCenters.size(); i++){
 			
 			double[] userPoints = userItemsToArray(user.getItems());

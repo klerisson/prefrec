@@ -41,7 +41,7 @@ import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.streng
 public class ExecuteCross {
 
 	public static void run(int partitions) throws Exception {
-		for (int h=1; h <=7; h++) {
+		for (int h=4; h <=7; h++) {
 			for (int i = 0; i < partitions; i++) {
 
 				UtilityMatrix utilityMatrix = null;
@@ -51,8 +51,8 @@ public class ExecuteCross {
 
 				KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 						.getClusterBuilder(ClusterEnum.KMEANS);
-				Clusterer clusterer = clustererBuilder.clustersNumber(2)
-						.measure(new MyEuclideanDistance())
+				Clusterer clusterer = clustererBuilder.clustersNumber(h)
+						.measure(new MyPearsonCorrelationSimilarity())
 						.centroidStrategy(CentroidStrategy.AVERAGE).build();
 				
 				//Clusterer clusterer = clustererBuilder.clustersNumber(h)
@@ -75,8 +75,8 @@ public class ExecuteCross {
 				System.out.println();
 				System.out.println(i);
 				System.out.println();
-				// System.out.println(clusterer.silhouetteCalc());
-				//writeSilhouette(i,clusterer.silhouetteCalc(),h);
+				 System.out.println(clusterer.silhouetteCalc());
+				writeSilhouette(i,clusterer.silhouetteCalc(),h);
 				Agregator agregator = new Agregator(cluster, utilityMatrix);
 				agregator.execute();
 
@@ -101,17 +101,17 @@ public class ExecuteCross {
 				//XPrefRec xprefrec = new XPrefRec(
 				//agregator.getConcensualMatrixMap(), miner);
 
-				XPrefRec xprefrec = new XPrefRecSocialThreshold(
-					agregator.getConcensualMatrixMap(), miner,
-						new MutualFriendsStrenghtTie(),0.1*h);
+				//XPrefRec xprefrec = new XPrefRecSocialThreshold(
+					//agregator.getConcensualMatrixMap(), miner,
+						//new CentralityStrenghtTie(),0.1*h);
 
 				//XPrefRec xprefrec = new XPrefRecSocialAverage(
 				//agregator.getConcensualMatrixMap(), miner,
 				 //new SimilarityStrenghtTie());
 
-				// XPrefRec xprefrec = new XPrefRecSocialThreshold(
-				// agregator.getConcensualMatrixMap(), miner,
-				// new CentralityStrenghtTie(),.001);
+				 XPrefRec xprefrec = new XPrefRecSocialThreshold(
+				  agregator.getConcensualMatrixMap(), miner,
+				 new 	CentralityStrenghtTie(),.001);
 
 				for (int j = 0; j < partitions; j++) {
 

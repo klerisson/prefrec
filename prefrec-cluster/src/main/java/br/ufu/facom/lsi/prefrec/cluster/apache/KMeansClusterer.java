@@ -128,7 +128,7 @@ public class KMeansClusterer<T extends Clusterable> extends KMeansPlusPlusCluste
 		        	centroid[i] = nonEmptyCounter[i] > (points.size() / 2) ? centroid[i] / nonEmptyCounter[i] : -1;
 		        	break;
 		        case MAJORITY:
-		        	centroid[i] = nonEmptyCounter[i] > (points.size() / 2) ? centroid[i] / nonEmptyCounter[i] : this.getMostFrequent(histoList.get(i));
+		        	centroid[i] = nonEmptyCounter[i] > (points.size() / 2) ? this.getMostFrequent(histoList.get(i)) : centroid[i] / nonEmptyCounter[i] ;
 		        	break;
 		        default:
 		        	centroid[i] = nonEmptyCounter[i] != 0 ? centroid[i] / nonEmptyCounter[i] : -1;

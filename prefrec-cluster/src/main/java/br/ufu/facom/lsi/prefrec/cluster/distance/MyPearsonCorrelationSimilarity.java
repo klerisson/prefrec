@@ -27,7 +27,7 @@ public class MyPearsonCorrelationSimilarity implements DistanceMeasure {
 			}
 		}
 		if (qtdeRates == 0) {
-			return (100.00);
+			return (3);
 		} else {
 			avgP1=avgP1/qtdeRates;
 			avgP2=avgP2/qtdeRates;

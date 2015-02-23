@@ -62,11 +62,11 @@
 			<artifactId>gov-sandia-cognition-framework-learning</artifactId>
 			<version>3.3.3</version>
 		</dependency>
-		<dependency>
+		<dependency> 
 			<groupId>cprefminer</groupId>
 			<artifactId>cprefminermulti</artifactId>
-			<version>1.0.4</version>
-		</dependency>
+			<version>1.0.5</version>
+ 		</dependency>
 		<dependency>
 			<groupId>org.battelle</groupId>
 			<artifactId>clodhopper-core</artifactId>

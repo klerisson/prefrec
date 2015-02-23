@@ -77,6 +77,7 @@ public class CrossValidationTestersRepresenter extends Representer {
 			Map<User, Double> interaction = new HashMap<>();
 			Map<User, Double> similarity = new HashMap<>();
 			String friendshipSql = "select f.friendid,c.centrality,m.jaccard,i.interaction,s.similarity from "
+		//	String friendshipSql = "select f.friendid,c.centrality,m.jaccard,i.interaction,s.tie from "
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
 					+ " f, "

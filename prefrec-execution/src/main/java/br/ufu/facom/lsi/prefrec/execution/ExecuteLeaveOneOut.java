@@ -52,7 +52,7 @@ for(int h=2;h<=5;h++){
 			KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 					.getClusterBuilder(ClusterEnum.KMEANS);
 			Clusterer clusterer = clustererBuilder.clustersNumber(h)
-					.measure(new CosineDistanceNormalized())
+					.measure(new MyEuclideanDistance())
 					.centroidStrategy(CentroidStrategy.AVERAGE).build();
 
 			// KMeansPlusPlusBuilder clustererBuilder = (KMeansPlusPlusBuilder)
@@ -91,13 +91,13 @@ for(int h=2;h<=5;h++){
 
 			//XPrefRec xprefrec = new XPrefRec(
 			 //agregator.getConcensualMatrixMap(), miner);
-			XPrefRec xprefrec = new XPrefRecSocialThreshold(
-					agregator.getConcensualMatrixMap(), miner,
-					new MutualFriendsStrenghtTie(),0.001);
+			//XPrefRec xprefrec = new XPrefRecSocialThreshold(
+				//	agregator.getConcensualMatrixMap(), miner,
+					//new MutualFriendsStrenghtTie(),0.001);
 			
-			//XPrefRec xprefrec = new XPrefRecSocialAverage(
-				//agregator.getConcensualMatrixMap(), miner,
-				//new CentralityStrenghtTie());
+			XPrefRec xprefrec = new XPrefRecSocialAverage(
+				agregator.getConcensualMatrixMap(), miner,
+				new FriendshipStrenghtTie());
 
 			LeaveOneOutTesterRepresenter testerRepresenter = (LeaveOneOutTesterRepresenter) RepresenterFacotry
 					.getRepresenter(RepresenterEnum.LEAVE_ONE_OUT_TESTER);

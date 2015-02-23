@@ -29,7 +29,7 @@ public class CosineDistance implements DistanceMeasure {
 			}
 		
 
-		return qtderates == 0 ? Double.MAX_VALUE :(1/(sum / (FastMath
+		return qtderates == 0 ? 2 :(1-(sum / (FastMath
 				.sqrt(sumP1) * FastMath.sqrt(sumP2))));
 	}
 

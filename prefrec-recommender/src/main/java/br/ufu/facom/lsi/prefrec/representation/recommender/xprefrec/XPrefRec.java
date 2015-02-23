@@ -34,7 +34,7 @@ public class XPrefRec {
 		super();
 		this.miner = miner;
 		this.concensualMatrixMap = concensualMatrixMap;
-		this.distanceMeasure = new  MyEuclideanDistance();
+		this.distanceMeasure = new MyEuclideanDistance();
 	}
 
 	public Float[] run(Long userId, Double[][] itemItem,

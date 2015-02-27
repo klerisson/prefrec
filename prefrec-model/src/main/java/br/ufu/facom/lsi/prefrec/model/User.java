@@ -179,8 +179,10 @@ public class User implements Serializable {
 	}
 
 	public boolean hasFriends() {
+		if(this.friends == null){
+			return false;
+		} 
 		return !this.friends.isEmpty();
-		
 	}
 	
 	/*

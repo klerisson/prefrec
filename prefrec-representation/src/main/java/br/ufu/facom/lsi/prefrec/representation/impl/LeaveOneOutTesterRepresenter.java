@@ -139,7 +139,7 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 					+ PropertiesUtil
 							.getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
 					+ " where rate<>-1 and itemid not in (" + listString
-					+ ") and userid="+userId+"order by itemid;";
+					+ ") and userid="+userId+" order by itemid;";
 		}
 		Map<Integer, Double> result = new HashMap<>();
 		try (Connection conn = GetConnection.getConnection();

@@ -25,6 +25,7 @@ public class MyEuclideanDistance implements DistanceMeasure {
 				qtderates++;
 			}
 		}
+		//System.out.println(FastMath.sqrt(sum)+" "+qtderates+" "+FastMath.sqrt(sum) / qtderates);
 		if (qtderates == 0) {
 			return (100);
 		} else {

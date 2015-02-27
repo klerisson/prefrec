@@ -66,7 +66,7 @@ public class XPrefRecSocialAverage extends XPrefRecSocial {
 	 * br.ufu.facom.lsi.prefrec.model.UtilityMatrix)
 	 */
 	@Override
-	protected Double[][] findSimilarConcensualMatrix(Long userId,
+	public Double[][] findSimilarConcensualMatrix(Long userId,
 			Map<Long, Double[]> clusterCenters,
 			UtilityMatrix testerUtilityMatrix) {
 

@@ -178,6 +178,11 @@ public class User implements Serializable {
 						this.silhouetteExtraClusters);
 	}
 
+	public boolean hasFriends() {
+		return !this.friends.isEmpty();
+		
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

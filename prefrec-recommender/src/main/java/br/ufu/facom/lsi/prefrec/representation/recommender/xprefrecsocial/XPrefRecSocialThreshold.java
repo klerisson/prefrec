@@ -31,7 +31,7 @@ public class XPrefRecSocialThreshold extends XPrefRecSocialAverage{
 	 * @see br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec#findSimilarConcensualMatrix(java.lang.Long, java.util.Map, br.ufu.facom.lsi.prefrec.model.UtilityMatrix)
 	 */
 	@Override
-	protected Double[][] findSimilarConcensualMatrix(Long userId,
+	public Double[][] findSimilarConcensualMatrix(Long userId,
 			Map<Long, Double[]> clusterCenters,
 			UtilityMatrix testerUtilityMatrix) {
 

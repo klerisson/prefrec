@@ -82,7 +82,7 @@ public class XPrefRec {
 		return result;
 	}
 
-	protected Double[][] findSimilarConcensualMatrix(Long userId, Map<Long, Double[]> clusterCenters,
+	public Double[][] findSimilarConcensualMatrix(Long userId, Map<Long, Double[]> clusterCenters,
 			UtilityMatrix testerUtilityMatrix) {
 
 		User user = testerUtilityMatrix.getUserItemList(userId);

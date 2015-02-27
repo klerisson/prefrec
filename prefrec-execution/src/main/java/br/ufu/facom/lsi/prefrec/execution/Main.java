@@ -32,8 +32,9 @@ public class Main {
 				}
 			};
 			
-			//ExecuteLeaveOneOut.run(r.getAllUserIds());
-			ExecuteCross.run(5);
+			ExecuteLeaveOneOut.run(r.getAllUserIds());//select all users as testers
+			//ExecuteLeaveOneOut.run(r.getSpecificUserIds());//select a specific group as testers
+			//ExecuteCross.run(5);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

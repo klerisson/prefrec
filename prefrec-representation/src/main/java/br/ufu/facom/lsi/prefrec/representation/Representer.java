@@ -46,4 +46,25 @@ public abstract class Representer {
 			throw e;
 		}
 	};
+	
+	public List<Long> getSpecificUserIds() throws Exception {
+
+		List<Long> usersId = new ArrayList<>();
+		String selectSQL = "select distinct(userid) from "
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.DATA_TABLE_SPECIFIC)
+				+ " order by userid;";
+
+		try (Connection conn = GetConnection.getConnection();
+				Statement st = conn.createStatement();
+				ResultSet rs = st.executeQuery(selectSQL);) {
+			
+			while (rs.next()) {
+				usersId.add(rs.getLong("userid"));
+			}
+			return usersId;
+		} catch (Exception e) {
+			throw e;
+		}
+	};
 }

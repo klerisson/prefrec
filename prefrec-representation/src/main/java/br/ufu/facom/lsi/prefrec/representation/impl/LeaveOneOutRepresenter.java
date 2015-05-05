@@ -102,6 +102,8 @@ public class LeaveOneOutRepresenter extends Representer {
 					+" m.userid=i.userid and m.userid=s.userid and m.friendid=i.friendid and m.friendid=s.friendid and" 
 					+" i.userid=s.userid and i.friendid=s.friendid and f.userid= " + userId
 					+ " order by f.friendid;";
+			
+
 
 
 			try (Connection conn = GetConnection.getConnection();

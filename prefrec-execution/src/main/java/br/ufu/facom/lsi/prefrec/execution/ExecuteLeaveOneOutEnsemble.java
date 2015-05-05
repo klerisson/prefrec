@@ -15,7 +15,7 @@ import br.ufu.facom.lsi.prefrec.cluster.ClusterEnum;
 import br.ufu.facom.lsi.prefrec.cluster.Clusterer;
 import br.ufu.facom.lsi.prefrec.cluster.ClustererFactory;
 import br.ufu.facom.lsi.prefrec.cluster.apache.KMeansClusterer.CentroidStrategy;
-import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
+import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistanceNormalized;
 import br.ufu.facom.lsi.prefrec.cluster.impl.KMeansImpl.KMeansBuilder;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.User;
@@ -26,7 +26,7 @@ import br.ufu.facom.lsi.prefrec.representation.RepresenterFacotry;
 import br.ufu.facom.lsi.prefrec.representation.impl.LeaveOneOutTesterRepresenter;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrec.XPrefRec;
 import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.XPrefRecSocialThreshold;
-import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.MutualFriendsStrenghtTie;
+import br.ufu.facom.lsi.prefrec.representation.recommender.xprefrecsocial.strengthtie.impl.InteractionStrenghtTie;
 import br.ufu.facom.lsi.prefrec.util.AppPropertiesEnum;
 import br.ufu.facom.lsi.prefrec.util.PropertiesUtil;
 
@@ -34,7 +34,7 @@ public class ExecuteLeaveOneOutEnsemble {
 
 	public static void run(List<Long> usersId) throws Exception {
 		// int h=1;
-		for (int h = 2; h <= 5; h++) {
+		for (int h = 2; h <=5; h++) {
 			for (Long currentUserId : usersId) {
 
 				Representer representer = RepresenterFacotry
@@ -45,7 +45,7 @@ public class ExecuteLeaveOneOutEnsemble {
 				KMeansBuilder clustererBuilder = (KMeansBuilder) ClustererFactory
 						.getClusterBuilder(ClusterEnum.KMEANS);
 				Clusterer clusterer = clustererBuilder.clustersNumber(h)
-						.measure(new MyEuclideanDistance())
+						.measure(new CosineDistanceNormalized())
 						.centroidStrategy(CentroidStrategy.AVERAGE).build();
 
 				// KMeansPlusPlusBuilder clustererBuilder =
@@ -76,6 +76,7 @@ public class ExecuteLeaveOneOutEnsemble {
 						// create map index to itemid
 						itemMap.put(cont, id.intValue());
 						cont++;
+						
 					}
 					miner.buildModels(new ArrayList<Double[][]>(agregator
 							.getConcensualMatrixMap().keySet()), itemMap);
@@ -89,7 +90,7 @@ public class ExecuteLeaveOneOutEnsemble {
 
 				XPrefRec xprefrecSocial = new XPrefRecSocialThreshold(
 						agregator.getConcensualMatrixMap(), miner,
-						new MutualFriendsStrenghtTie(), 0.001);
+						new InteractionStrenghtTie(), 0.001);
 
 				// XPrefRec xprefrecSocial = new XPrefRecSocialAverage(
 				// agregator.getConcensualMatrixMap(), miner,

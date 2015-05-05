@@ -44,9 +44,14 @@ public class CosineDistanceNormalized implements DistanceMeasure {
 				sumP2 += FastMath.pow((avgP2-p2[i]), 2);
 			}
 			}
-		
-
-		return qtdeRates == 0 ? 3 :(1-(sum / (FastMath
+		if (qtdeRates==0){
+			return 3;
+		}
+		else if (sum==0){
+			return 1;
+		}
+		else
+		 return (1-(sum / (FastMath
 				.sqrt(sumP1) * FastMath.sqrt(sumP2))));
 	}
 

@@ -36,7 +36,7 @@ public class KMeansImpl extends Clusterer{
 		super();
 		this.distance = builder.measure;
 		this.kMeans = new KMeansClusterer<DoublePoint>(builder.clustersNumber,
-				-1, builder.measure, new JDKRandomGenerator(),
+				100, builder.measure, new JDKRandomGenerator(),
 				EmptyClusterStrategy.LARGEST_VARIANCE, builder.centroidStrategy);
 	}
 

@@ -6,13 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
-import org.apache.commons.math3.util.FastMath;
 
 import prefdb.model.PrefDatabase;
-import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistance;
 import br.ufu.facom.lsi.prefrec.cluster.distance.CosineDistanceNormalized;
-import br.ufu.facom.lsi.prefrec.cluster.distance.MyEuclideanDistance;
-import br.ufu.facom.lsi.prefrec.cluster.distance.MyPearsonCorrelationSimilarity;
 import br.ufu.facom.lsi.prefrec.mining.cprefminermulti.Miner;
 import br.ufu.facom.lsi.prefrec.model.Item;
 import br.ufu.facom.lsi.prefrec.model.User;
@@ -24,6 +20,7 @@ public class XPrefRec {
 	private DistanceMeasure distanceMeasure;
 	protected Map<Double[][], List<Map<Long, Double[][]>>> concensualMatrixMap;
 	protected Miner miner;
+	private List<Long> totalOriginalItems;
 
 	/**
 	 * @param concensualMatrixMap
@@ -34,9 +31,18 @@ public class XPrefRec {
 		super();
 		this.miner = miner;
 		this.concensualMatrixMap = concensualMatrixMap;
-		this.distanceMeasure = new MyEuclideanDistance();
+		this.distanceMeasure = new CosineDistanceNormalized();
 	}
 
+	public Float[] run(Long userId, Double[][] itemItem,
+			Map<Integer, Double> itemIdToRate,
+			Map<Long, Double[]> clusterCenters,
+			UtilityMatrix testerUtilityMatrix, List<Long> totalOriginalItems) throws Exception {
+		
+		this.totalOriginalItems = totalOriginalItems;
+		return this.run(userId, itemItem, itemIdToRate, clusterCenters, testerUtilityMatrix);
+	}
+	
 	public Float[] run(Long userId, Double[][] itemItem,
 			Map<Integer, Double> itemIdToRate,
 			Map<Long, Double[]> clusterCenters,
@@ -54,10 +60,11 @@ public class XPrefRec {
 		try {
 			PrefDatabase pdb = miner.toPrefDatabase(itemIdToRate);
 			if (pdb != null) {
-				v.runOverModel(3, pdb);
-				return new Float[] { v.getAvPrecision(), v.getAvRecall() };
+				v.runOverModel(1, pdb);
+				return new Float[] { v.getAvPrecision(), v.getAvRecall(),v.getRulesNotFoundGeneralRate() };
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw e;
 		}
 		return null;
@@ -67,7 +74,7 @@ public class XPrefRec {
 
 		double[] itemItemVector = matrixToVector(itemItem);
 		Double[][] result = null;
-		double distance = 100;
+		double distance = Double.MAX_VALUE;
 		for (Double[][] concensualTemp : this.concensualMatrixMap.keySet()) {
 
 			double[] concensualVector = matrixToVector(concensualTemp);
@@ -87,7 +94,7 @@ public class XPrefRec {
 
 		User user = testerUtilityMatrix.getUserItemList(userId);
 		Double[][] result = null;
-		double distance = 100;//Double.MAX_VALUE;
+		double distance = Double.MAX_VALUE;
 		for(int i = 0; i < clusterCenters.size(); i++){
 			
 			double[] userPoints = userItemsToArray(user.getItems());
@@ -110,9 +117,14 @@ public class XPrefRec {
 	
 	
 	protected double[] userItemsToArray(List<Item> items) {
-		double[] userPoints = new double[items.size()];
-		for(int i = 0; i < items.size(); i++){
-			userPoints[i] = items.get(i).getRate();
+		double[] userPoints = new double[this.totalOriginalItems.size()];
+		for (int i = 0; i < this.totalOriginalItems.size(); i++) {
+			Item temp = new Item(this.totalOriginalItems.get(i), 0.0);
+			if(items.contains(temp)){
+				userPoints[i] = items.get(items.indexOf(temp)).getRate();	
+			} else {
+				userPoints[i] = -1.0;
+			}
 		}
 		return userPoints;
 	}

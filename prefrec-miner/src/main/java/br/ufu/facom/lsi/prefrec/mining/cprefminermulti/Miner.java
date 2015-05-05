@@ -73,8 +73,11 @@ public class Miner {
 		ArrayList<String> attribsList = new ArrayList<>();
 		attribsList.addAll(Arrays.asList(attributes));
 
-		//Integer[] maxMult = { 3, 3, 6, 4, 1,4, 0 };//director,genre,language,star,year,country,user
-		Integer[] maxMult = { 5, 3, 6, 4, 1,6, 0 };
+		Integer[] maxMult = { 3, 3, 6, 4, 1,4, 0 };//director,genre,language,star,year,country,user
+		//Integer[] maxMult = { 5, 3, 6, 4, 1,6, 0 };//flixster
+		
+		//Database d = new Database("../miningoutput/Flixster/", attribsList, "user.cpm",
+			//maxMult, ',');
 
 		Database d = new Database("../miningoutput/Fbprefrec/", attribsList, "user.cpm",
 				maxMult, ',');

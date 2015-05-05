@@ -48,8 +48,8 @@ public class XPrefRecSocialAverage extends XPrefRecSocial {
 		try {
 			PrefDatabase pdb = miner.toPrefDatabase(itemIdToRate);
 			if (pdb != null) {
-				v.runOverModel(3, pdb);
-				return new Float[] { v.getAvPrecision(), v.getAvRecall() };
+				v.runOverModel(1, pdb);
+				return new Float[] { v.getAvPrecision(), v.getAvRecall() ,v.getRulesNotFoundGeneralRate()};
 			}
 		} catch (Exception e) {
 			throw e;

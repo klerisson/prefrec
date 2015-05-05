@@ -52,16 +52,16 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 		UtilityMatrix um = new UtilityMatrix();
 		List<Item> itemList = new ArrayList<>();
 
-		// String selectSQL2 = "select itemid, rate from (SELECT * FROM "
-		// + PropertiesUtil
-		// .getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
-		// + " where rate<>-1 and userid = " + userIdent +
-		// " order by RANDOM() limit "
-		// + itemQt + ") result order by itemid;";
-		String selectSQL2 = "select itemid, rate from "
-				+ PropertiesUtil
-						.getAppPropertie(AppPropertiesEnum.DATATABLE_RAND)
-				+ " where userid = " + userIdent + " order by itemid;";
+		 String selectSQL2 = "select itemid, rate from (SELECT * FROM "
+		 + PropertiesUtil
+		 .getAppPropertie(AppPropertiesEnum.DATA_TABLE_STRATIFIED)
+		 + " where rate<>-1 and userid = " + userIdent +
+		 " order by RANDOM() limit "
+		 + itemQt + ") result order by itemid;";
+		//String selectSQL2 = "select itemid, rate from "
+			//	+ PropertiesUtil
+				//		.getAppPropertie(AppPropertiesEnum.DATATABLE_RAND)
+				//+ " where userid = " + userIdent + " order by itemid;";
 
 		try (Connection conn = GetConnection.getConnection();
 				Statement st = conn.createStatement();
@@ -81,24 +81,46 @@ public class LeaveOneOutTesterRepresenter extends Representer {
 		Map<User, Double> mutualFriends = new HashMap<>();
 		Map<User, Double> interaction = new HashMap<>();
 		Map<User, Double> similarity = new HashMap<>();
+//		String friendshipSql = "select f.friendid,c.centrality,m.jaccard,i.interaction,s.similarity from "
+//				+ PropertiesUtil
+//						.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
+//				+ " f, "
+//				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.CENTRALITY)
+//				+ " c, "
+//				+ PropertiesUtil
+//						.getAppPropertie(AppPropertiesEnum.MUTUALFRIENDS)
+//				+ " m, "
+//				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.INTERACTION)
+//				+ " i,"
+//				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.SIMILARITY)
+//				+ " s where f.friendid=c.userid and f.userid=m.userid and f.userid=i.userid and f.userid=s.userid and"
+//				+ " f.friendid=m.friendid and f.friendid=i.friendid and f.friendid=s.friendid and"
+//				+ " c.userid=m.friendid and c.userid=i.friendid and c.userid=s.friendid and"
+//				+ " m.userid=i.userid and m.userid=s.userid and m.friendid=i.friendid and m.friendid=s.friendid and"
+//				+ " i.userid=s.userid and i.friendid=s.friendid and f.userid= "
+//				+ userIdent + " order by f.friendid;";
 		String friendshipSql = "select f.friendid,c.centrality,m.jaccard,i.interaction,s.similarity from "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.FRIENDSHIP_TABLE)
 				+ " f, "
-				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.CENTRALITY)
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.CENTRALITY)
 				+ " c, "
 				+ PropertiesUtil
 						.getAppPropertie(AppPropertiesEnum.MUTUALFRIENDS)
-				+ " m, "
-				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.INTERACTION)
+						+ " m, "
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.INTERACTION)
 				+ " i,"
-				+ PropertiesUtil.getAppPropertie(AppPropertiesEnum.SIMILARITY)
+				+ PropertiesUtil
+						.getAppPropertie(AppPropertiesEnum.SIMILARITY)
 				+ " s where f.friendid=c.userid and f.userid=m.userid and f.userid=i.userid and f.userid=s.userid and"
-				+ " f.friendid=m.friendid and f.friendid=i.friendid and f.friendid=s.friendid and"
-				+ " c.userid=m.friendid and c.userid=i.friendid and c.userid=s.friendid and"
-				+ " m.userid=i.userid and m.userid=s.userid and m.friendid=i.friendid and m.friendid=s.friendid and"
-				+ " i.userid=s.userid and i.friendid=s.friendid and f.userid= "
-				+ userIdent + " order by f.friendid;";
+				+" f.friendid=m.friendid and f.friendid=i.friendid and f.friendid=s.friendid and" 
+				+" c.userid=m.friendid and c.userid=i.friendid and c.userid=s.friendid and" 
+				+" m.userid=i.userid and m.userid=s.userid and m.friendid=i.friendid and m.friendid=s.friendid and" 
+				+" i.userid=s.userid and i.friendid=s.friendid and f.userid= " + userIdent
+				+ " order by random() limit "+ PropertiesUtil
+				.getAppPropertie(AppPropertiesEnum.FRIEND_SIZE)+";";
 
 		//System.out.println(friendshipSql);
 		try (Connection conn = GetConnection.getConnection();
